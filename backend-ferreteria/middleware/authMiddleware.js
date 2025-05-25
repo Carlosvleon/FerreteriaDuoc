@@ -3,11 +3,12 @@ const pool = require('../servidor/db');
 require('dotenv').config();
 
 const authMiddleware = async (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
-
-  if (!token) {
+  const tokenHeader = req.header('Authorization');
+  if (!tokenHeader) {
     return res.status(401).json({ error: 'Acceso denegado. No se proporcionó un token.' });
   }
+
+  const token = tokenHeader.replace('Bearer ', '');
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

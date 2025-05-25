@@ -1,5 +1,4 @@
--- Agregar extensión para UUID
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 
 -----------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
@@ -13,7 +12,16 @@ DROP TABLE IF EXISTS public.tipo_genero CASCADE;
 DROP TABLE IF EXISTS public.tipo_usuario CASCADE;
 DROP TABLE IF EXISTS public.tipo_estado_usuario CASCADE;
 DROP TABLE IF EXISTS public.tipo_estado_usuoficio CASCADE;
-DROP TABLE IF EXISTS invalid_tokens CASCADE;
+DROP TABLE IF EXISTS public.bodega_producto CASCADE;
+DROP TABLE IF EXISTS public.precio_producto CASCADE;
+DROP TABLE IF EXISTS public.producto CASCADE;
+DROP TABLE IF EXISTS public.bodega CASCADE;
+DROP TABLE IF EXISTS public.sucursal CASCADE;
+DROP TABLE IF EXISTS public.categoria CASCADE;
+DROP TABLE IF EXISTS public.modelo CASCADE;
+DROP TABLE IF EXISTS public.marca CASCADE;
+DROP TABLE IF EXISTS public.invalid_tokens CASCADE;
+
 -----------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
 
@@ -209,7 +217,103 @@ CREATE TABLE IF NOT EXISTS invalid_tokens (
     fecha_expiracion TIMESTAMP
 );
 
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
 
+
+-- Tabla de sucursales (pensando a futuro)
+CREATE TABLE sucursal (
+    id_sucursal SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+	activo BOOLEAN
+);
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+
+-- Tabla de marcas
+CREATE TABLE marca (
+    id_marca SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+	activo BOOLEAN
+);
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+-- Tabla de modelos
+CREATE TABLE modelo (
+    id_modelo SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+	activo BOOLEAN
+);
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+-- Tabla de categorías
+CREATE TABLE categoria (
+    id_categoria SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+	activo BOOLEAN
+);
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+-- Tabla de producto
+CREATE TABLE producto (
+    id_producto SERIAL PRIMARY KEY,
+    codigo_producto VARCHAR(20) UNIQUE NOT NULL,
+    nombre VARCHAR(255) NOT NULL,
+    id_marca INT NOT NULL,
+    id_modelo INT,
+    id_categoria INT,
+	activo BOOLEAN,
+    CONSTRAINT fk_producto_marca FOREIGN KEY (id_marca) REFERENCES marca(id_marca),
+    CONSTRAINT fk_producto_modelo FOREIGN KEY (id_modelo) REFERENCES modelo(id_modelo),
+    CONSTRAINT fk_producto_categoria FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria)
+);
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+-- Tabla de bodegas
+CREATE TABLE bodega (
+    id_bodega SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    id_sucursal INT,
+	activo BOOLEAN,
+    CONSTRAINT fk_bodega_sucursal FOREIGN KEY (id_sucursal) REFERENCES sucursal(id_sucursal)
+);
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+
+-- Tabla de historial de precios(opcoinal):
+CREATE TABLE precio_producto (
+    id_precio SERIAL PRIMARY KEY,
+    id_producto INT NOT NULL,
+    fecha TIMESTAMP DEFAULT NOW(),
+    valor DECIMAL(12,2) NOT NULL,
+	activo BOOLEAN,
+    CONSTRAINT fk_precio_producto FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+-- Tabla bodega-producto:
+CREATE TABLE bodega_producto (
+    id_bodega_producto SERIAL PRIMARY KEY,
+    id_bodega INT NOT NULL,
+    id_producto INT NOT NULL,
+    stock INT NOT NULL,
+    fecha_modificacion TIMESTAMP DEFAULT NOW(),
+    ultimo_precio DECIMAL(12,2),
+	activo BOOLEAN,
+    CONSTRAINT fk_bodega_producto_bodega FOREIGN KEY (id_bodega) REFERENCES bodega(id_bodega),
+    CONSTRAINT fk_bodega_producto_producto FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------------------------------
 -- Se agrega inser tabla tipo_genero:
@@ -751,5 +855,51 @@ INSERT INTO public.especializacion_oficio (nombre, oficio_id) VALUES
 -- Ingeniero/a en redes (93)
 INSERT INTO public.especializacion_oficio (nombre, oficio_id) VALUES
 ('Sin especialización', 93);
+
+
+-- Sucursales
+INSERT INTO sucursal (nombre) VALUES 
+('Sucursal Central'),
+('Sucursal Norte');
+
+-- Bodegas
+INSERT INTO bodega (nombre, id_sucursal) VALUES 
+('Bodega Central', 1),
+('Bodega Norte', 2);
+
+-- Marcas
+INSERT INTO marca (nombre) VALUES 
+('Bosch'),
+('Stanley'),
+('DeWalt');
+
+-- Modelos
+INSERT INTO modelo (nombre) VALUES 
+('X100'),
+('ProMax'),
+('Industrial Plus');
+
+-- Categorías
+INSERT INTO categoria (nombre) VALUES 
+('Taladros'),
+('Martillos'),
+('Pinturas');
+
+-- Productos
+INSERT INTO producto (codigo_producto, nombre, id_marca, id_modelo, id_categoria) VALUES 
+('FER-12345', 'Taladro Percutor Bosch', 1, 1, 1),
+('FER-54321', 'Martillo Stanley 16oz', 2, 2, 2);
+
+-- Inventario en bodegas
+INSERT INTO bodega_producto (id_bodega, id_producto, stock, ultimo_precio) VALUES 
+(1, 1, 15, 89090.99),
+(2, 1, 10, 90000.00),
+(1, 2, 25, 15000.50);
+
+-- Historial de precios
+INSERT INTO precio_producto (id_producto, fecha, valor) VALUES 
+(1, '2023-05-10T03:00:00.000Z', 89090.99),
+(1, '2024-01-01T03:00:00.000Z', 90000.00),
+(2, NOW(), 15000.50);
 
 

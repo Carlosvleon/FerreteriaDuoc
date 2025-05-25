@@ -55,6 +55,15 @@ app.use('/api', agregarOficiosRoutes);
 const llamarOficiosRoutes = require('./rutas/llamar_oficios');
 app.use('/api', llamarOficiosRoutes);
 
+// Usar las rutas para obtener productos
+const productoRoutes = require('./rutas/producto');
+app.use('/api', productoRoutes);
+
+// Usar las rutas para obtener productos
+const bodegaProductoRoutes = require('./rutas/bodega_producto');
+app.use('/api', bodegaProductoRoutes);
+
+
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
