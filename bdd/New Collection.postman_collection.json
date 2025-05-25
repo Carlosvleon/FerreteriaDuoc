@@ -1,0 +1,557 @@
+{
+	"info": {
+		"_postman_id": "46b889d7-8f77-41e2-a6fd-f78ce794f53c",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37414854"
+	},
+	"item": [
+		{
+			"name": "Passapp Local_Host",
+			"item": [
+				{
+					"name": "POST",
+					"item": [
+						{
+							"name": "Registrar Usuario Cliente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var template = `\r",
+											"<style type=\"text/css\">\r",
+											"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+											"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+											"    .tftable tr {background-color:#ffffff;}\r",
+											"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+											"    .tftable tr:hover {background-color:#e0ffff;}\r",
+											"</style>\r",
+											"\r",
+											"<table class=\"tftable\" border=\"1\">\r",
+											"    <tr>\r",
+											"        <th>Error Message</th>\r",
+											"    </tr>\r",
+											"    <tr>\r",
+											"        <td>{{response.error}}</td>\r",
+											"    </tr>\r",
+											"</table>\r",
+											"`;\r",
+											"\r",
+											"function constructVisualizerPayload() {\r",
+											"    return {response: pm.response.json()}\r",
+											"}\r",
+											"\r",
+											"pm.visualizer.set(template, constructVisualizerPayload());"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nombre\": \"Juan Perez\",\r\n  \"email\": \"juan@prueba.cl\",\r\n  \"password\": \"hashed_password\",\r\n  \"telefono\": \"123456789\",\r\n  \"direccion\": \"Calle Falsa 123\",\r\n  \"portada\": \"path/to/portada.jpg\",\r\n  \"tipo_usuario_id\": 4,\r\n  \"rut\": \"12345678-9\",\r\n  \"genero_id\": 1\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Registrar Usuario Empresa",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var template = `\r",
+											"<style type=\"text/css\">\r",
+											"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+											"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+											"    .tftable tr {background-color:#ffffff;}\r",
+											"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+											"    .tftable tr:hover {background-color:#e0ffff;}\r",
+											"</style>\r",
+											"\r",
+											"<table class=\"tftable\" border=\"1\">\r",
+											"    <tr>\r",
+											"        <th>Error Message</th>\r",
+											"    </tr>\r",
+											"    <tr>\r",
+											"        <td>{{response.error}}</td>\r",
+											"    </tr>\r",
+											"</table>\r",
+											"`;\r",
+											"\r",
+											"function constructVisualizerPayload() {\r",
+											"    return {response: pm.response.json()}\r",
+											"}\r",
+											"\r",
+											"pm.visualizer.set(template, constructVisualizerPayload());"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nombre\": \"Empresa XYZ\",\r\n  \"email\": \"empresa@prueba.cl\",\r\n  \"password\": \"hashed_password\",\r\n  \"telefono\": \"123456789\",\r\n  \"direccion\": \"Calle Falsa 123\",\r\n  \"portada\": \"path/to/portada.jpg\",\r\n  \"tipo_usuario_id\": 2,\r\n  \"rut\": \"98765432-1\",\r\n  \"genero_id\": 3,\r\n  \"razon_social\": \"Empresa XYZ S.A.\",\r\n  \"fecha_creacion_empresa\": \"2000-01-01\",\r\n  \"oficios\": [\r\n    {\r\n      \"oficio_id\": 2,\r\n      \"especializacion_id\": 5\r\n    },\r\n    {\r\n      \"oficio_id\": 3,\r\n      \"especializacion_id\": 7\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Registrar Usuario Maestro Independiente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var template = `\r",
+											"<style type=\"text/css\">\r",
+											"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+											"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+											"    .tftable tr {background-color:#ffffff;}\r",
+											"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+											"    .tftable tr:hover {background-color:#e0ffff;}\r",
+											"</style>\r",
+											"\r",
+											"<table class=\"tftable\" border=\"1\">\r",
+											"    <tr>\r",
+											"        <th>Error Message</th>\r",
+											"    </tr>\r",
+											"    <tr>\r",
+											"        <td>{{response.error}}</td>\r",
+											"    </tr>\r",
+											"</table>\r",
+											"`;\r",
+											"\r",
+											"function constructVisualizerPayload() {\r",
+											"    return {response: pm.response.json()}\r",
+											"}\r",
+											"\r",
+											"pm.visualizer.set(template, constructVisualizerPayload());"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nombre\": \"Diego Madrid\",\r\n  \"email\": \"diego@prueba.cl\",\r\n  \"password\": \"hashed_password\",\r\n  \"telefono\": \"123456789\",\r\n  \"direccion\": \"Calle Falsa 123\",\r\n  \"portada\": \"path/to/portada.jpg\",\r\n  \"tipo_usuario_id\": 1,\r\n  \"rut\": \"19914672-K\",\r\n  \"genero_id\": 1,\r\n  \"oficios\": [\r\n    {\r\n      \"oficio_id\": 1,\r\n      \"especializacion_id\": 1\r\n    },\r\n    {\r\n      \"oficio_id\": 1,\r\n      \"especializacion_id\": 2\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login Usuario",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"diego@prueba.cl\",\r\n  \"password\": \"hashed_password\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cerrar Sesion",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoiNjk1M2YxMjQtZjNlNS00ZjYwLTg3OGEtNTE3OTMzYjBjNTFmIiwiZW1haWwiOiJkaWVnb0BwcnVlYmEuY2wiLCJ0aXBvX3VzdWFyaW8iOjEsInJ1dCI6IjE5OTE0NjcyLUsiLCJpYXQiOjE3Mzk0MDkxMDAsImV4cCI6MTczOTQxNjMwMH0.eh4YeiZPU5YZBL1iAc7EUCoihMdK-OZXuY76Imj6UkA",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/api/cerrar_sesion",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"cerrar_sesion"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Actualizar Foto De Perfil",
+							"request": {
+								"auth": {
+									"type": "jwt",
+									"jwt": [
+										{
+											"key": "addTokenTo",
+											"value": "queryParam",
+											"type": "string"
+										},
+										{
+											"key": "algorithm",
+											"value": "HS256",
+											"type": "string"
+										},
+										{
+											"key": "isSecretBase64Encoded",
+											"value": false,
+											"type": "boolean"
+										},
+										{
+											"key": "payload",
+											"value": "{}",
+											"type": "string"
+										},
+										{
+											"key": "headerPrefix",
+											"value": "Bearer",
+											"type": "string"
+										},
+										{
+											"key": "queryParamKey",
+											"value": "token",
+											"type": "string"
+										},
+										{
+											"key": "header",
+											"value": "{}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoiNjc2ZGY5ZTAtZDY2My00NzYwLThiYWMtOTQyMTZiM2JjMTE2IiwiZW1haWwiOiJkaWVnb0BtYWRyaWQuY2wiLCJ0aXBvX3VzdWFyaW8iOjEsInJ1dCI6IjE5OTE0NjcyLUsiLCJpYXQiOjE3MzkyMjU1MTUsImV4cCI6MTczOTIzMjcxNX0.EDPEzYhYFOd-87qLz6-apBCiMGreADUQniT5lpkhrxs",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "rut",
+											"value": "19914672-K",
+											"type": "text"
+										},
+										{
+											"key": "foto_perfil",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/actualizar-foto-perfil?Authorization=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoiNGEzOGNlZDYtMDQ1NC00NTRmLWIyY2QtZDYwY2Y1ZTRkMTVlIiwiZW1haWwiOiJkaWVnb0BtYWRyaWQuY2wiLCJ0aXBvX3VzdWFyaW8iOjEsImlhdCI6MTczOTIyMjA3NiwiZXhwIjoxNzM5MjI5Mjc2fQ.eE_dbyE0NDcHqtYVErm9SQAAjl1lk5I0p27_SEn7hv4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"actualizar-foto-perfil"
+									],
+									"query": [
+										{
+											"key": "Authorization",
+											"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoiNGEzOGNlZDYtMDQ1NC00NTRmLWIyY2QtZDYwY2Y1ZTRkMTVlIiwiZW1haWwiOiJkaWVnb0BtYWRyaWQuY2wiLCJ0aXBvX3VzdWFyaW8iOjEsImlhdCI6MTczOTIyMjA3NiwiZXhwIjoxNzM5MjI5Mjc2fQ.eE_dbyE0NDcHqtYVErm9SQAAjl1lk5I0p27_SEn7hv4"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Actualizar Foto De Portada",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoiNjc2ZGY5ZTAtZDY2My00NzYwLThiYWMtOTQyMTZiM2JjMTE2IiwiZW1haWwiOiJkaWVnb0BtYWRyaWQuY2wiLCJ0aXBvX3VzdWFyaW8iOjEsInJ1dCI6IjE5OTE0NjcyLUsiLCJpYXQiOjE3MzkyMjU1MTUsImV4cCI6MTczOTIzMjcxNX0.EDPEzYhYFOd-87qLz6-apBCiMGreADUQniT5lpkhrxs",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "rut",
+											"value": "19914672-K",
+											"type": "text"
+										},
+										{
+											"key": "portada",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/actualizar-portada",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"actualizar-portada"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Agregar oficios a un usuario",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoiNjk1M2YxMjQtZjNlNS00ZjYwLTg3OGEtNTE3OTMzYjBjNTFmIiwiZW1haWwiOiJkaWVnb0BwcnVlYmEuY2wiLCJ0aXBvX3VzdWFyaW8iOjEsInJ1dCI6IjE5OTE0NjcyLUsiLCJpYXQiOjE3Mzk0MDk2NjQsImV4cCI6MTczOTQxNjg2NH0.hyq3MU-TGaCu_wwlgfb7FRpxSwraTsdb4aJZNDviJm0",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/api/agregar_oficios",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"agregar_oficios"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "GET",
+					"item": [
+						{
+							"name": "Buscar Usuarios",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/usuarios",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mi Perfil",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoiMTdkYjI3ZjEtYWI3YS00ZDYxLWExOTEtM2ExOWUzNDFjYWM5IiwiZW1haWwiOiJkaWVnb0BtYWRyaWQuY2wiLCJ0aXBvX3VzdWFyaW8iOjEsInJ1dCI6IjE5OTE0NjcyLTYiLCJpYXQiOjE3MzkyODc0MDEsImV4cCI6MTczOTI5NDYwMX0.GIKVyMVDrtspuFzPgukZnn7sh7rF04iDYdQ0w-3l9Kk",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:5000/api/perfil",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"perfil"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Perfil Buscado",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/perfil/33a55bfc-a83b-40c2-a3a2-682b045cb398",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"perfil",
+										"33a55bfc-a83b-40c2-a3a2-682b045cb398"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "PUT",
+					"item": [
+						{
+							"name": "Actualizar estado oficio",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjoiZDZmMzJhMGItZTJhNy00MjI2LWJmNDgtZTFhMWIyZWY1MGIxIiwiZW1haWwiOiJkaWVnb0BwcnVlYmEuY2wiLCJ0aXBvX3VzdWFyaW8iOjEsInJ1dCI6IjE5OTE0NjcyLUsiLCJpYXQiOjE3Mzk0MTIxNjIsImV4cCI6MTczOTQxOTM2Mn0.KfJsXo1woplpuDe2fE-upsVmgTqkxyxoyLR2cQ8rs14",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"oficio_id\": 2,\r\n  \"especializacion_id\": 5,\r\n  \"estado_id\": 2  // Estado: Oculto\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/actualizar_estado_oficio",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"actualizar_estado_oficio"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
