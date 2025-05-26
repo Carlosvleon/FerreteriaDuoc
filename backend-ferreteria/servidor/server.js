@@ -63,6 +63,14 @@ app.use('/api', productoRoutes);
 const bodegaProductoRoutes = require('./rutas/bodega_producto');
 app.use('/api', bodegaProductoRoutes);
 
+// Usar las rutas para obtener productos por bodega y sucursal
+const bodegaSucursalRoutes = require('./rutas/bodega_sucursal');
+app.use('/api', bodegaSucursalRoutes);
+
+// Usar las rutas para obtener productos por bodega y sucursal
+const carritoComprasAgregarRoutes = require('./rutas/carrito_compras');
+app.use('/api', carritoComprasAgregarRoutes);
+
 
 const PORT = 5000;
 app.listen(PORT, () => {

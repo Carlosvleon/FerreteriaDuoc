@@ -28,15 +28,16 @@ router.post("/bodega_sucursal", authMiddleware, async (req, res) => {
        JOIN sucursal s ON b.id_sucursal = s.id_sucursal
        LEFT JOIN marca ma ON ma.id_marca = p.id_marca
        LEFT JOIN modelo mo ON mo.id_modelo = p.id_modelo
-       WHERE b.id_bodega = $1 AND s.id_sucursal = $2
+       WHERE bp.id_bodega = $1 AND s.id_sucursal = $2
        ORDER BY p.id_producto ASC`,
       [id_bodega, id_sucursal]
     );
 
+    console.log(`Consulta POST de bodega ${id_bodega} en sucursal ${id_sucursal} por ${req.user.email}`);
     res.json(result.rows);
   } catch (error) {
-    console.error(" Error al consultar bodega_sucursal:", error);
-    res.status(500).json({ error: "Error al obtener información de bodega y sucursal." });
+    console.error(" Error al consultar productos:", error);
+    res.status(500).json({ error: "Error al obtener productos desde la base de datos." });
   }
 });
 

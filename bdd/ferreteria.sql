@@ -1,3 +1,11 @@
+-- Agregar extensión para UUID
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
 
 
 -----------------------------------------------------------------------------------------------
@@ -7,6 +15,8 @@
 DROP TABLE IF EXISTS public.usuario_oficio CASCADE;
 DROP TABLE IF EXISTS public.especializacion_oficio CASCADE;
 DROP TABLE IF EXISTS public.tipo_oficio CASCADE;
+DROP TABLE IF EXISTS public.detalle_carrito_compras CASCADE;
+DROP TABLE IF EXISTS public.carrito_compras CASCADE;
 DROP TABLE IF EXISTS public.usuarios CASCADE;
 DROP TABLE IF EXISTS public.tipo_genero CASCADE;
 DROP TABLE IF EXISTS public.tipo_usuario CASCADE;
@@ -314,6 +324,23 @@ CREATE TABLE bodega_producto (
 );
 -----------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
+
+CREATE TABLE carrito_compras (
+  id_carrito_compras SERIAL PRIMARY KEY,
+  id_usuario UUID NOT NULL REFERENCES usuarios(id_usuario) ,
+  total NUMERIC(10,2) DEFAULT 0
+);
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+CREATE TABLE detalle_carrito_compras (
+  id_detalle_carrito SERIAL PRIMARY KEY,
+  id_carrito_compras INTEGER REFERENCES carrito_compras(id_carrito_compras),
+  id_producto INTEGER NOT NULL,
+  cantidad INTEGER NOT NULL CHECK (cantidad > 0),
+  total NUMERIC(10,2) NOT NULL
+);
 
 ---------------------------------------------------------------------------------------------------
 -- Se agrega inser tabla tipo_genero:
@@ -901,5 +928,8 @@ INSERT INTO precio_producto (id_producto, fecha, valor) VALUES
 (1, '2023-05-10T03:00:00.000Z', 89090.99),
 (1, '2024-01-01T03:00:00.000Z', 90000.00),
 (2, NOW(), 15000.50);
+
+
+
 
 
