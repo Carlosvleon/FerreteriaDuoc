@@ -1,1 +1,5 @@
-<p>login works!</p>
+<form #loginForm="ngForm" (ngSubmit)="login(email.value, password.value)">
+  <input type="email" name="email" #email="ngModel" ngModel placeholder="Correo" required>
+  <input type="password" name="password" #password="ngModel" ngModel placeholder="Contraseña" required>
+  <button type="submit">Iniciar sesión</button>
+</form>
