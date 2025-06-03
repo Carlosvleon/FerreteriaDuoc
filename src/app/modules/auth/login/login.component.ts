@@ -17,8 +17,10 @@ export class LoginComponent {
 
   login(email: string, password: string) {
     this.authService.login({ email, password }).subscribe({
+      // vamos a almacenar el token en el localStorage con nombre token
       next: (response) => {
         console.log('Login successful', response);
+        localStorage.setItem('token', response.token);
       },
       error: (error) => {
         console.error('Login failed', error);
