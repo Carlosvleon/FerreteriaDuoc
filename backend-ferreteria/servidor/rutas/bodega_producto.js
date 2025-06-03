@@ -3,11 +3,11 @@ const router = express.Router();
 const pool = require("../db");
 const authMiddleware = require("../../middleware/authMiddleware");
 
-router.post("/bodega_sucursal", authMiddleware, async (req, res) => {
-  const { id_sucursal, id_bodega } = req.body;
+router.get("/bodega_sucursal", authMiddleware, async (req, res) => {
+  const { id_sucursal, id_bodega } = req.query;
 
   if (!id_sucursal || !id_bodega) {
-    return res.status(400).json({ error: "Debe enviar id_sucursal e id_bodega en el body." });
+    return res.status(400).json({ error: "Debe enviar id_sucursal e id_bodega en los parámetros de consulta." });
   }
 
   try {

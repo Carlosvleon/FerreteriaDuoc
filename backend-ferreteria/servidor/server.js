@@ -5,7 +5,11 @@ app.use(express.json());
 require("dotenv").config();
   
 // Configurar CORS
-app.use(cors());
+app.use(cors( {
+  origin: 'http://localhost:4200', // Cambia esto por la URL de tu frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'] // Encabezados permitidos
+}));
 
 // Usa las rutas de test para probar la conexión a la BD
 const testRoutes = require('./rutas/testRoutes');  
