@@ -1,0 +1,16 @@
+<div class="listaProductos-container">
+        <ul>
+            <li *ngFor="let producto of listaProductos">
+                {{ producto.nombre }} - {{ producto.precio | currency }}
+    </li>
+    </ul>
+    <div class="pagination">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+    <span>Página {{ currentPage }} de {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
+    </div>
+    <div class="filter">
+        <label for="search">Buscar:</label>
+        <input type="text" id="search" [(ngModel)]="searchTerm" (ngModelChange)="filterProducts()" placeholder="Buscar productos...">
+    </div>
+</div>

@@ -13,7 +13,7 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(credentials: { email: string, password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/api/login`, credentials);
+    return this.http.post(`${this.apiUrl}/api/usuarios/login`, credentials);
   }
 
   logout(): Observable<any> {
@@ -21,6 +21,6 @@ export class AuthService {
   }
 
   register(user: { nombre: string, email: string, password: string, telefono: string, direccion: string, portada: string, tipo_usuario_id:number, rut:string, genero_id:number }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/api/register`, user);
+    return this.http.post(`${this.apiUrl}/api/usuarios/register`, user);
   }
 }
