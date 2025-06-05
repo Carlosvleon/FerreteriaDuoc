@@ -1,3 +1,4 @@
 backend-ferreteria/.env
 backend-ferreteria/package-lock.json
 backend-ferreteria/node_modules/.package-lock.json
+backend-ferreteria/.vscode/settings.json

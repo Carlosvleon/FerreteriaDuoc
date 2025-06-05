@@ -1,0 +1,445 @@
+{
+  "info": {
+    "name": "Ferreter\u00eda API - Endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "updatedAt": "2025-06-05T03:27:28.899001Z"
+  },
+  "item": [
+    {
+      "name": "Registrar usuario",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/usuarios/register",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "usuarios",
+            "register"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan Perez\",\n  \"email\": \"juan@correo.com\",\n  \"password\": \"123456\",\n  \"telefono\": \"123456789\",\n  \"direccion\": \"Calle Falsa 123\",\n  \"portada\": \"ruta/portada.jpg\",\n  \"tipo_usuario_id\": 4,\n  \"rut\": \"12345678-9\",\n  \"genero_id\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Login usuario",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/usuarios/login",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "usuarios",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"juan@correo.com\",\n  \"password\": \"123456\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Cerrar sesi\u00f3n",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/usuarios/cerrar_sesion",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "usuarios",
+            "cerrar_sesion"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ver perfil propio",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/perfiles/mi-perfil",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "perfiles",
+            "mi-perfil"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Listar usuarios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/perfiles/listar",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "perfiles",
+            "listar"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Ver perfil por ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/perfiles/123",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "perfiles",
+            "123"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Actualizar foto perfil",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/perfiles/foto",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "perfiles",
+            "foto"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Actualizar portada",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/perfiles/portada",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "perfiles",
+            "portada"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Listar oficios",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/oficios",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "oficios"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Agregar oficios",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/oficios/agregar",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "oficios",
+            "agregar"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Actualizar estado oficio",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/oficios/estado",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "oficios",
+            "estado"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Listar productos",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/productos",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "productos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Productos por bodega (GET)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/productos/bodega?id_bodega=1&id_sucursal=1",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "productos",
+            "bodega?id_bodega=1&id_sucursal=1"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Productos por bodega (POST)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/productos/bodega",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "productos",
+            "bodega"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_bodega\": 1,\n  \"id_sucursal\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Productos por sucursal",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/bodegas/productos",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "bodegas",
+            "productos"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_bodega\": 1,\n  \"id_sucursal\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Ver carrito",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/carrito",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "carrito"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Agregar al carrito",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5000/api/carrito",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "carrito"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_bodega\": 1,\n  \"productos\": [\n    {\n      \"codigo_producto\": \"ABC123\",\n      \"cantidad\": 2\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Test DB",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/test",
+          "host": [
+            "localhost"
+          ],
+          "port": "5000",
+          "path": [
+            "test"
+          ]
+        }
+      }
+    }
+  ]
+}
