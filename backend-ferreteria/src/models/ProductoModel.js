@@ -1,10 +1,29 @@
 const pool = require('../db');
 
 exports.obtenerTodos = async () => {
-  const result = await pool.query(
-    "SELECT * FROM producto p LEFT JOIN precios_online po ON po.id_producto = p.id_producto  ORDER BY p.id_producto ASC"
+  const productosResult = await pool.query(
+    `SELECT p.*, po.precio_online 
+     FROM producto p 
+     LEFT JOIN precios_online po ON po.id_producto = p.id_producto 
+     ORDER BY p.id_producto ASC`
   );
-  return result.rows;
+
+  const productos = productosResult.rows;
+
+  for (const producto of productos) {
+    const stockResult = await pool.query(
+      `SELECT s.nombre AS nombre_sucursal, bp.stock
+       FROM bodega_producto bp
+       JOIN bodega b ON bp.id_bodega = b.id_bodega
+       JOIN sucursal s ON b.id_sucursal = s.id_sucursal
+       WHERE bp.id_producto = $1`,
+      [producto.id_producto]
+    );
+
+    producto.stock_por_sucursal = stockResult.rows;
+  }
+
+  return productos;
 };
 
 exports.obtenerPorBodega = async (id_bodega, id_sucursal) => {
