@@ -333,13 +333,20 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 <nav class="navbar">
-  <a class="logo" href="/">
-    <img src="/assets/angular-logo.svg" alt="Angular Logo" />
+  <span class="title">Ferreteria Duoc</span>
+  <a mat-button href="/login">
+    Inicio de sesión
   </a>
-  <span class="title">Angular App</span>
-  <a class="github-link" href="https://github.com/angular/angular" target="_blank" rel="noopener">
-    github
+  <a mat-button href="/carrito">
+    Ver Carrito
   </a>
+  <a mat-button href="/productos">
+    Ver Productos
+  </a>
+  <a mat-button href="/register">
+    Registrarse
+  </a>
+  
 </nav>
 
 <router-outlet></router-outlet>

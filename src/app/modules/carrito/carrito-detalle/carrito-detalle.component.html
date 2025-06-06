@@ -1,0 +1,12 @@
+<div class="carrito-detalle">
+  <h2>Detalle del Carrito</h2>
+  <ul>
+    <li *ngFor="let p of productos">
+      {{ p.nombre }} - Cantidad: {{ p.cantidad }}
+      <button (click)="editarCantidad(p, p.cantidad + 1)">+</button>
+      <button (click)="editarCantidad(p, p.cantidad - 1)" [disabled]="p.cantidad <= 1">-</button>
+      <button (click)="quitarProducto(p)">Quitar</button>
+    </li>
+  </ul>
+  <button disabled>Comprar (próximamente)</button>
+</div>

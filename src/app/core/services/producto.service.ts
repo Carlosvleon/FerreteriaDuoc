@@ -17,7 +17,14 @@ export class ProductoService {
     const token = localStorage.getItem('token');
     console.log('Token usado:', token);
     const headers = { Authorization: `Bearer ${token}` };
-    return this.http.get(`${this.apiUrl}/api/producto`, { headers });
+    return this.http.get(`${this.apiUrl}/api/productos/`, { headers });
+  }
+
+  getProductosPorBodega(id_bodega: number, id_sucursal: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    console.log('Token usado:', token);
+    const headers = { Authorization: `Bearer ${token}` };
+    return this.http.post(`${this.apiUrl}/api/productos/bodega`, { id_bodega, id_sucursal }, { headers });
   }
 
   // getProductoById(id: number): Observable<any> {

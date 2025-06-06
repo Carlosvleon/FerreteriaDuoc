@@ -17,7 +17,10 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/logout`, {});
+    const token = localStorage.getItem('token');
+    const headers = { Authorization: `Bearer ${token}` };
+    localStorage.removeItem('token'); // Limpiar el token del localStorage
+    return this.http.post(`${this.apiUrl}/api/usuarios/cerrar_sesion`, {}, { headers });
   }
 
   register(user: { nombre: string, email: string, password: string, telefono: string, direccion: string, portada: string, tipo_usuario_id:number, rut:string, genero_id:number }): Observable<any> {
