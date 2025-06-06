@@ -16,7 +16,12 @@ exports.login = async (req, res) => {
 
 exports.register = async (req, res) => {
   try {
-    const data = req.body; 
+    const data = req.body;
+    // Validar y forzar que el password sea string
+    if (!data.email || typeof data.password !== 'string' || data.password.length < 6) {
+      return res.status(400).json({ error: 'El correo y contraseña (mínimo 6 caracteres) son obligatorios' });
+    }
+    data.password = String(data.password); // Por si acaso
     const result = await userModel.register(data);
     res.status(result.status).json(result.body);
   } catch (err) {
