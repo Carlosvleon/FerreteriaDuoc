@@ -10,24 +10,22 @@ export class CarritoService {
   private apiUrl = environment.apiUrl;
   constructor(private http: HttpClient) { }
 
-  verCarrito(): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = { Authorization: `Bearer ${token}` };
-    return this.http.get(`${this.apiUrl}/api/carrito/`, { headers });
+  obtenerCarrito(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/carrito/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
   }
-
-agregarProducto(id_bodega: number, codigo_producto: string, cantidad: number): Observable<any> {
-  const token = localStorage.getItem('token');
-  const headers = { Authorization: `Bearer ${token}` };
-  const body = {
-    id_bodega,
-    productos: [
-      { codigo_producto, cantidad }
-    ]
-  };
-  return this.http.post(`${this.apiUrl}/api/carrito/agregar/`, body, { headers });
-}
-
-
+  agregarProducto(idProducto: number, cantidad: number) {
+    return this.http.post(`${this.apiUrl}/api/carrito/agregar`, {
+      id_producto: idProducto,
+      cantidad: cantidad
+    }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+  }
 
 }

@@ -76,8 +76,7 @@ export class ListarProductosComponent {
   }
 
   agregarAlCarrito(producto: any, cantidad: number = 1) {
-    const id_bodega = producto.id_bodega || 1; // Usa el id_bodega del producto o un valor por defecto
-    this.carritoService.agregarProducto(id_bodega, producto.id_producto, cantidad).subscribe({
+    this.carritoService.agregarProducto( producto.id_producto, cantidad).subscribe({
       next: (res) => {
         alert('Producto agregado al carrito');
       },
@@ -119,11 +118,9 @@ cerrarModal(): void {
 confirmarAgregarAlCarrito(): void {
   const producto = this.productoSeleccionado;
   const cantidad = this.cantidadSeleccionada;
-  const sucursal = this.sucursalSeleccionada;
 
-  const id_bodega = producto.id_bodega || 1; // Ajusta según sea necesario
 
-  this.carritoService.agregarProducto(id_bodega, producto.id_producto, cantidad).subscribe({
+  this.carritoService.agregarProducto(producto.id_producto, cantidad).subscribe({
     next: () => {
       alert('Producto agregado al carrito');
       this.cerrarModal();

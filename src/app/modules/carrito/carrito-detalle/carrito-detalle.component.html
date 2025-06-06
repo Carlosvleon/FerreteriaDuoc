@@ -1,12 +1,28 @@
-<div class="carrito-detalle">
-  <h2>Detalle del Carrito</h2>
-  <ul>
-    <li *ngFor="let p of productos">
-      {{ p.nombre }} - Cantidad: {{ p.cantidad }}
-      <button (click)="editarCantidad(p, p.cantidad + 1)">+</button>
-      <button (click)="editarCantidad(p, p.cantidad - 1)" [disabled]="p.cantidad <= 1">-</button>
-      <button (click)="quitarProducto(p)">Quitar</button>
-    </li>
-  </ul>
-  <button disabled>Comprar (próximamente)</button>
+<div class="carrito-container" *ngIf="carrito">
+  <h2>Carrito de Compras</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Código</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of carrito.productos">
+        <td>{{ item.nombre }}</td>
+        <td>{{ item.codigo_producto }}</td>
+        <td>{{ item.cantidad }}</td>
+        <td>{{ item.total  }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="total">Total general: {{ carrito.total_general  }}</p>
+</div>
+
+<div *ngIf="!carrito">
+  <p>No hay productos en el carrito.</p>
 </div>
