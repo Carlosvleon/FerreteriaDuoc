@@ -35,57 +35,69 @@ exports.login = async (email, password) => {
 };
 
 exports.register = async (data) => {
-  const { nombre, email, password, telefono, direccion, portada, tipo_usuario_id, rut, oficios, genero_id, razon_social, fecha_creacion_empresa } = data;
+  try {
+    const { nombre, email, password, telefono, direccion, portada, tipo_usuario_id, rut, oficios, genero_id, razon_social, fecha_creacion_empresa } = data;
 
-  if (!nombre || !email || !password || !tipo_usuario_id || !rut || !genero_id) {
-    return { status: 400, body: { error: 'Faltan datos obligatorios' } };
-  }
-
-  const existsEmail = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
-  if (existsEmail.rows.length > 0) return { status: 400, body: { error: 'El correo ya está registrado' } };
-
-  const existsRut = await pool.query('SELECT * FROM usuarios WHERE rut = $1', [rut]);
-  if (existsRut.rows.length > 0) return { status: 400, body: { error: 'El RUT ya está registrado' } };
-
-  const salt = await bcrypt.genSalt(12);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  const userId = uuidv4();
-
-  let avatarFile = genero_id === 1 ? 'avatar_hombre.jpg' : genero_id === 2 ? 'avatar_mujer.jpg' : 'avatar_neutral.jpg';
-  const avatarSrc = path.join(__dirname, '../../img/profile_basic', avatarFile);
-  const avatarDest = path.join(__dirname, '../../GPP', rut, 'perfil', 'avatar.jpg');
-  await fs.copy(avatarSrc, avatarDest);
-  const fotoPerfilPath = path.join('GPP', rut, 'perfil', 'avatar.jpg');
-
-  await pool.query(
-    'INSERT INTO usuarios (id_usuario, nombre, email, password, telefono, direccion, foto_perfil, portada, tipo_usuario_id, rut, genero_id, razon_social, fecha_creacion_empresa) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
-    [userId, nombre, email, hashedPassword, telefono, direccion, fotoPerfilPath, portada, tipo_usuario_id, rut, genero_id, razon_social, fecha_creacion_empresa]
-  );
-
-  const userDir = path.join(__dirname, '../../GPP', rut);
-  await fs.ensureDir(path.join(userDir, 'perfil'));
-  await fs.ensureDir(path.join(userDir, 'portada'));
-  await fs.ensureDir(path.join(userDir, 'galeria'));
-
-  if ((tipo_usuario_id === 1 || tipo_usuario_id === 2) && Array.isArray(oficios)) {
-    for (const oficio of oficios) {
-      const res = await pool.query(
-        'SELECT o.nombre AS oficio_nombre, e.nombre AS especializacion_nombre FROM tipo_oficio o JOIN especializacion_oficio e ON o.id = e.oficio_id WHERE o.id = $1 AND e.id = $2',
-        [oficio.oficio_id, oficio.especializacion_id]
-      );
-      if (res.rows.length > 0) {
-        const { oficio_nombre, especializacion_nombre } = res.rows[0];
-        await fs.ensureDir(path.join(userDir, 'galeria', `${oficio_nombre}_${especializacion_nombre}`));
-      }
-
-      await pool.query(
-        'INSERT INTO usuario_oficio (usuario_id, oficio_id, especializacion_id) VALUES ($1, $2, $3)',
-        [userId, oficio.oficio_id, oficio.especializacion_id]
-      );
+    // Validación inicial
+    if (!nombre || !email || !password || !tipo_usuario_id || !rut || !genero_id) {
+      console.log('[REGISTER] Faltan datos obligatorios', data);
+      return { status: 400, body: { error: 'Faltan datos obligatorios' } };
     }
-  }
 
-  return { status: 201, body: { message: 'Usuario registrado con éxito', userId } };
+    // ¿Email ya existe?
+    const existsEmail = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+    if (existsEmail.rows.length > 0) {
+      console.log('[REGISTER] Email ya registrado:', email);
+      return { status: 400, body: { error: 'El correo ya está registrado' } };
+    }
+
+    // ¿Rut ya existe?
+    const existsRut = await pool.query('SELECT * FROM usuarios WHERE rut = $1', [rut]);
+    if (existsRut.rows.length > 0) {
+      console.log('[REGISTER] RUT ya registrado:', rut);
+      return { status: 400, body: { error: 'El RUT ya está registrado' } };
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const userId = uuidv4();
+
+    let avatarFile = genero_id === 1 ? 'avatar_hombre.jpg' : genero_id === 2 ? 'avatar_mujer.jpg' : 'avatar_neutral.jpg';
+    const avatarSrc = path.join(__dirname, '../../img/profile_basic', avatarFile);
+    const avatarDest = path.join(__dirname, '../../GPP', rut, 'perfil', 'avatar.jpg');
+    await fs.copy(avatarSrc, avatarDest);
+    const fotoPerfilPath = path.join('GPP', rut, 'perfil', 'avatar.jpg');
+
+    // INSERT USUARIO
+    try {
+      await pool.query(
+        'INSERT INTO usuarios (id_usuario, nombre, email, password, telefono, direccion, foto_perfil, portada, tipo_usuario_id, rut, genero_id, razon_social, fecha_creacion_empresa) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+        [userId, nombre, email, hashedPassword, telefono, direccion, fotoPerfilPath, portada, tipo_usuario_id, rut, genero_id, razon_social, fecha_creacion_empresa]
+      );
+      console.log('[REGISTER] Usuario creado con id:', userId);
+    } catch (err) {
+      console.error('[REGISTER][ERROR][Usuario]', err);
+      return { status: 500, body: { error: 'Error creando usuario', details: err.message } };
+    }
+
+    // INSERT CARRITO
+    try {
+      const resultCarrito = await pool.query(
+        'INSERT INTO carrito_compras (id_usuario, total) VALUES ($1, $2) RETURNING *',
+        [userId, null]
+      );
+      console.log('[REGISTER] Carrito creado:', resultCarrito.rows[0]);
+    } catch (err) {
+      console.error('[REGISTER][ERROR][Carrito]', err);
+      return { status: 500, body: { error: 'Error creando carrito', details: err.message } };
+    }
+
+    // Fin: usuario + carrito creados
+    return { status: 201, body: { message: 'Usuario registrado con éxito', userId } };
+  } catch (err) {
+    console.error('[REGISTER][ERROR][General]', err);
+    return { status: 500, body: { error: "Error al registrar el usuario", details: err.message } };
+  }
 };
 
 exports.invalidateToken = async (token, exp) => {
