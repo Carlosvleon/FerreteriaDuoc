@@ -9,6 +9,5 @@ backend-ferreteria/node_modules
 package-lock.json
 node_modules/.package-lock.json
 .vscode/settings.json
-node_modules
 img
 GPP
