@@ -2,17 +2,11 @@ backend-ferreteria/.env
 backend-ferreteria/package-lock.json
 backend-ferreteria/node_modules/.package-lock.json
 backend-ferreteria/.vscode/settings.json
-<<<<<<< HEAD
 backend-ferreteria/GPP
 backend-ferreteria/img
-=======
->>>>>>> 1e28b9420d2a50ea7c9ccc14e389fd78db94c3c4
 .env
 package-lock.json
 node_modules/.package-lock.json
 .vscode/settings.json
-<<<<<<< HEAD
 img
 GPP
-=======
->>>>>>> 1e28b9420d2a50ea7c9ccc14e389fd78db94c3c4
