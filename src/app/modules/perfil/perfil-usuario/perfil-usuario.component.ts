@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { environment } from '../../../../environments/environment';
 
 
 
@@ -47,7 +48,7 @@ export class PerfilUsuarioComponent implements OnInit {
   });
 }
 cerrarSesion(): void {
-  this.http.post('http://localhost:5000/api/usuarios/cerrar_sesion', {}, {
+  this.http.post(environment.apiUrl + '/usuarios/cerrar_sesion', {}, {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('token') || ''}`
     }
