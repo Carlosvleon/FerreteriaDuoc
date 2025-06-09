@@ -1,8 +1,17 @@
+# Ignorar node_modules
 node_modules/
-dist/
-build/
 
-# Ignore all node_modules directories recursively
-**/node_modules/
-# Ignore all dist directories recursively
-**/dist/
+# Ignorar archivos de entorno
+.env
+
+# Ignorar carpeta GPP y todo su contenido
+GPP/
+
+# Ignorar carpeta img y todo su contenido
+img/
+
+# Ignorar configuración local de VSCode
+.vscode/
+
+# Ignorar lockfile (opcional, si no deseas compartir versiones exactas de dependencias)
+package-lock.json
