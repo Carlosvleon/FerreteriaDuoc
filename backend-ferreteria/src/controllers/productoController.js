@@ -1,9 +1,16 @@
 const productoModel = require('../models/ProductoModel');
 
+// LISTAR
 exports.getTodosLosProductos = async (req, res) => {
   try {
-    const productos = await productoModel.obtenerTodos();
-    console.log(`🛒 Usuario ${req.user.email} consultó los productos`);
+    const filtros = {
+      id_bodega: req.query.id_bodega,
+      id_sucursal: req.query.id_sucursal,
+      id_marca: req.query.id_marca,
+      id_categoria: req.query.id_categoria,
+      activo: req.query.activo !== undefined ? req.query.activo === 'true' : undefined
+    };
+    const productos = await productoModel.listar(filtros);
     res.json(productos);
   } catch (err) {
     console.error("Error al obtener productos:", err);
@@ -11,33 +18,54 @@ exports.getTodosLosProductos = async (req, res) => {
   }
 };
 
-exports.getProductosPorBodega = async (req, res) => {
-  const { id_sucursal, id_bodega } = req.query;
-  if (!id_sucursal || !id_bodega) {
-    return res.status(400).json({ error: "Debe enviar id_sucursal e id_bodega en los parámetros de consulta." });
-  }
-
+// CREAR PRODUCTO (con precio online)
+exports.crearProducto = async (req, res) => {
   try {
-    const productos = await productoModel.obtenerPorBodega(id_bodega, id_sucursal);
-    res.json(productos);
+    const { codigo_producto, nombre, id_marca, id_modelo, id_categoria, activo, precio_online } = req.body;
+    const producto = await productoModel.crear({ codigo_producto, nombre, id_marca, id_modelo, id_categoria, activo });
+
+    // Si se envía precio_online, crear registro en tabla
+    if (precio_online !== undefined && producto && producto.id_producto) {
+      await productoModel.crearPrecioOnline(producto.id_producto, precio_online);
+      producto.precio_online = precio_online; // Para mostrar en la respuesta
+    }
+
+    res.status(201).json(producto);
   } catch (err) {
-    console.error("Error al consultar bodega_sucursal:", err);
-    res.status(500).json({ error: "Error al obtener información de bodega y sucursal." });
+    console.error("Error al crear producto:", err);
+    res.status(500).json({ error: "Error al crear producto." });
   }
 };
 
-exports.getProductosPorBodegaPost = async (req, res) => {
-  const { id_sucursal, id_bodega } = req.body;
-  if (!id_sucursal || !id_bodega) {
-    return res.status(400).json({ error: "Debe enviar id_sucursal e id_bodega en el body." });
-  }
-
+// EDITAR PRODUCTO (con precio online)
+exports.actualizarProducto = async (req, res) => {
+  console.log("Entró a actualizarProducto con id:", req.params.id, "y body:", req.body);
   try {
-    const productos = await productoModel.obtenerPorBodega(id_bodega, id_sucursal);
-    console.log(`Consulta POST de bodega ${id_bodega} en sucursal ${id_sucursal} por ${req.user.email}`);
-    res.json(productos);
+    const id_producto = req.params.id;
+    const { codigo_producto, nombre, id_marca, id_modelo, id_categoria, activo, precio_online } = req.body;
+    const producto = await productoModel.actualizar(id_producto, { codigo_producto, nombre, id_marca, id_modelo, id_categoria, activo });
+
+    // Si se envía precio_online, actualiza o inserta en tabla
+    if (precio_online !== undefined && producto && producto.id_producto) {
+      await productoModel.actualizarPrecioOnline(producto.id_producto, precio_online);
+      producto.precio_online = precio_online;
+    }
+
+    res.json(producto);
   } catch (err) {
-    console.error("Error al consultar productos:", err);
-    res.status(500).json({ error: "Error al obtener productos desde la base de datos." });
+    console.error("Error al actualizar producto:", err);
+    res.status(500).json({ error: "Error al actualizar producto." });
+  }
+};
+
+// ELIMINAR PRODUCTO
+exports.eliminarProducto = async (req, res) => {
+  try {
+    const id_producto = req.params.id;
+    await productoModel.eliminar(id_producto);
+    res.json({ mensaje: 'Producto eliminado correctamente' });
+  } catch (err) {
+    console.error("Error al eliminar producto:", err);
+    res.status(500).json({ error: "Error al eliminar producto." });
   }
 };

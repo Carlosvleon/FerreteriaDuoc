@@ -1,17 +1,11 @@
--- Agregar extensión para UUID
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-
-
------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------
-
 
 
 -----------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
 
 -- Eliminar todas las tablas en el orden correcto (evitando errores de dependencias)
+
+DROP TABLE IF EXISTS precios_online CASCADE;
 DROP TABLE IF EXISTS public.usuario_oficio CASCADE;
 DROP TABLE IF EXISTS public.especializacion_oficio CASCADE;
 DROP TABLE IF EXISTS public.tipo_oficio CASCADE;
@@ -22,6 +16,7 @@ DROP TABLE IF EXISTS public.tipo_genero CASCADE;
 DROP TABLE IF EXISTS public.tipo_usuario CASCADE;
 DROP TABLE IF EXISTS public.tipo_estado_usuario CASCADE;
 DROP TABLE IF EXISTS public.tipo_estado_usuoficio CASCADE;
+DROP TABLE IF EXISTS public.precio_online CASCADE;
 DROP TABLE IF EXISTS public.bodega_producto CASCADE;
 DROP TABLE IF EXISTS public.precio_producto CASCADE;
 DROP TABLE IF EXISTS public.producto CASCADE;
@@ -342,6 +337,18 @@ CREATE TABLE detalle_carrito_compras (
   total NUMERIC(10,2) NOT NULL
 );
 
+
+
+
+-----------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------
+
+CREATE TABLE precios_online(
+  id_producto SERIAL PRIMARY KEY,
+  precio_online NUMERIC(10,2) NOT NULL
+);
+
+
 ---------------------------------------------------------------------------------------------------
 -- Se agrega inser tabla tipo_genero:
 -- 
@@ -375,10 +382,9 @@ INSERT INTO public.tipo_estado_usuoficio (nombre) VALUES
 
 -- Insertar valores iniciales en tipo_usuario
 INSERT INTO public.tipo_usuario (descripcion) VALUES
-('Maestro Independiente'),  -- ID 1
-('Empresa - Institución'),  -- ID 2
-('Administrador'),          -- ID 3
-('Cliente');                -- ID 4
+('Administrador'),          -- ID 1
+('Cliente'),                -- ID 2
+('Bodega');                -- ID 3
 
 -----------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------
@@ -929,7 +935,56 @@ INSERT INTO precio_producto (id_producto, fecha, valor) VALUES
 (1, '2024-01-01T03:00:00.000Z', 90000.00),
 (2, NOW(), 15000.50);
 
+--usuarios 
+INSERT INTO usuarios (
+  rut, nombre, email, password, telefono, direccion,
+  foto_perfil, portada, fecha_registro, razon_social, 
+  fecha_creacion_empresa, estado_id, tipo_usuario_id, id_usuario, genero_id
+) VALUES (
+  '12.345.678-9',                      -- rut
+  'Administrador General',              -- nombre
+  'admin@ferreteria.com',               -- email
+  '$2b$10$LNl8UGlVGOQ8SwZGl8XZtu1Z3wQZQ3C9.Nl4nZf/GBM45wjQ1mJxm', -- password hash ejemplo
+  '912345678',                          -- telefono
+  'Dirección 123, Santiago',            -- direccion
+  NULL,                                 -- foto_perfil
+  NULL,                                 -- portada
+  NOW(),                                -- fecha_registro
+  NULL,                                 -- razon_social
+  NULL,                                 -- fecha_creacion_empresa
+  1,                                    -- estado_id (activo)
+  1,                                    -- tipo_usuario_id (ADMIN)
+  uuid_generate_v4(),                   -- id_usuario generado automático
+  1                                     -- genero_id (por ejemplo Hombre)
+);
 
+
+INSERT INTO usuarios (
+  rut, nombre, email, password, telefono, direccion,
+  foto_perfil, portada, fecha_registro, razon_social, 
+  fecha_creacion_empresa, estado_id, tipo_usuario_id, id_usuario, genero_id
+) VALUES (
+  '23.456.789-0',                      -- rut
+  'Cliente Prueba',                    -- nombre
+  'cliente@ferreteria.com',            -- email
+  '$2b$10$TE23BWzv635RNKwVJ.o6AesA0Run2ZP8xX4OycU1ooJjK6qKLLQJK', -- password hash ejemplo
+  '987654321',                         -- telefono
+  'Otra dirección, Santiago',          -- direccion
+  NULL,                                -- foto_perfil
+  NULL,                                -- portada
+  NOW(),                               -- fecha_registro
+  NULL,                                -- razon_social
+  NULL,                                -- fecha_creacion_empresa
+  1,                                   -- estado_id (activo)
+  2,                                   -- tipo_usuario_id (CLIENTE)
+  uuid_generate_v4(),                  -- id_usuario generado automático
+  2                                    -- genero_id (por ejemplo Mujer)
+);
+
+
+-- Insertar carrito para admin
+INSERT INTO carrito_compras (id_usuario, total)
+SELECT id_usuario, 0 FROM usuarios WHERE email = 'admin@ferreteria.com';
 
 
 

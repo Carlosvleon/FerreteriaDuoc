@@ -11,18 +11,25 @@ exports.login = async (email, password) => {
   if (result.rows.length === 0) {
     return { status: 401, body: { error: 'Correo o contraseña incorrectos' } };
   }
-
+  console.log("la pasword es",password )
   const user = result.rows[0];
+  console.log("User encontrado:", user);
   const match = await bcrypt.compare(password, user.password);
+  console.log("correcta? :",match )
   if (!match) {
     return { status: 401, body: { error: 'Correo o contraseña incorrectos' } };
   }
 
   const token = jwt.sign(
-    { id_usuario: user.id_usuario, email: user.email, tipo_usuario: user.tipo_usuario_id, rut: user.rut },
-    process.env.JWT_SECRET,
-    { expiresIn: '2h' }
-  );
+  { 
+    id_usuario: user.id_usuario, 
+    email: user.email, 
+    tipo_usuario_id: user.tipo_usuario_id,
+    rut: user.rut 
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: '2h' }
+);
 
   return {
     status: 200,
@@ -36,10 +43,13 @@ exports.login = async (email, password) => {
 
 exports.register = async (data) => {
   try {
-    const { nombre, email, password, telefono, direccion, portada, tipo_usuario_id, rut, oficios, genero_id, razon_social, fecha_creacion_empresa } = data;
+    const { nombre, email, password, telefono, direccion, portada, rut, oficios, genero_id, razon_social, fecha_creacion_empresa } = data;
+
+    // Forzamos que cualquier usuario creado desde la web sea CLIENTE
+    const tipo_usuario_id = 2; // 1 = admin, 2 = cliente
 
     // Validación inicial
-    if (!nombre || !email || !password || !tipo_usuario_id || !rut || !genero_id) {
+    if (!nombre || !email || !password || !rut || !genero_id) {
       console.log('[REGISTER] Faltan datos obligatorios', data);
       return { status: 400, body: { error: 'Faltan datos obligatorios' } };
     }
@@ -68,7 +78,7 @@ exports.register = async (data) => {
     await fs.copy(avatarSrc, avatarDest);
     const fotoPerfilPath = path.join('GPP', rut, 'perfil', 'avatar.jpg');
 
-    // INSERT USUARIO
+    // INSERT USUARIO (tipo_usuario_id SIEMPRE será 2)
     try {
       await pool.query(
         'INSERT INTO usuarios (id_usuario, nombre, email, password, telefono, direccion, foto_perfil, portada, tipo_usuario_id, rut, genero_id, razon_social, fecha_creacion_empresa) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
@@ -99,6 +109,7 @@ exports.register = async (data) => {
     return { status: 500, body: { error: "Error al registrar el usuario", details: err.message } };
   }
 };
+
 
 exports.invalidateToken = async (token, exp) => {
   await pool.query(
