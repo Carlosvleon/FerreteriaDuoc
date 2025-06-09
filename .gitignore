@@ -45,3 +45,7 @@ Desktop.ini
 *.bak
 *.swp
 *.swo
+
+
+**/node_modules/
+# Ignore all node_modules directories recursively

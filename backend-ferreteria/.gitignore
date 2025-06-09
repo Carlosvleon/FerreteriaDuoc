@@ -1,13 +1,8 @@
-backend-ferreteria/.env
-backend-ferreteria/package-lock.json
-backend-ferreteria/node_modules/.package-lock.json
-backend-ferreteria/.vscode/settings.json
-backend-ferreteria/GPP
-backend-ferreteria/img
-backend-ferreteria/node_modules
-.env
-package-lock.json
-node_modules/.package-lock.json
-.vscode/settings.json
-img
-GPP
+node_modules/
+dist/
+build/
+
+# Ignore all node_modules directories recursively
+**/node_modules/
+# Ignore all dist directories recursively
+**/dist/
