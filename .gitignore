@@ -1,15 +1,47 @@
-backend-ferreteria/.env
-backend-ferreteria/package-lock.json
-backend-ferreteria/node_modules/.package-lock.json
-backend-ferreteria/.vscode/settings.json
-backend-ferreteria/GPP
-backend-ferreteria/img
-backend-ferreteria/node_modules
+# Node modules
+node_modules/
+
+# Compiled output
+dist/
+build/
+
+# Temporary files
+temp/
+tmp/
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment files
 .env
-package-lock.json
-node_modules/.package-lock.json
-.vscode/settings.json
-node_modules
-img
-GPP
-backend-ferreteria/node_modules
+.env.local
+
+# VS Code config
+.vscode/
+*.code-workspace
+
+# Angular specific
+.angular/cache/
+.angular/config.json
+
+# Test coverage
+coverage/
+
+# IDE-specific
+.idea/
+*.iml
+
+# OS generated
+ehthumbs.db
+Desktop.ini
+
+# npm/yarn lock files (opcional, según tu equipo)
+# yarn.lock
+# package-lock.json
+
+# Optional: backups or sensitive files
+*.bak
+*.swp
+*.swo
