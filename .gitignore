@@ -50,3 +50,4 @@ Desktop.ini
 **/node_modules/
 **/GPP/
 # Ignore all node_modules directories recursively
+backend-ferreteria/src/.env

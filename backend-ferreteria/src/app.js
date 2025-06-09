@@ -2,11 +2,12 @@
 
 const express = require("express");
 const cors = require("cors");
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:5000", // Cambia si es necesario
+  origin:  process.env.CORS,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
