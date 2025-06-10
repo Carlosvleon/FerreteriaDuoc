@@ -151,3 +151,12 @@ exports.obtenerComprasPorUsuario = async (usuarioId) => {
     client.release();
   }
 };
+
+exports.obtenerCarritoYTotal = async (usuarioId) => {
+  const { rows } = await pool.query(
+    'SELECT id_carrito_compras, total FROM carrito_compras WHERE id_usuario = $1',
+    [usuarioId]
+  );
+  if (rows.length === 0) return null;
+  return { id: rows[0].id_carrito_compras, total: parseFloat(rows[0].total || 0) };
+};

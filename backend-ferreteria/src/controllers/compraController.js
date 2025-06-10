@@ -1,4 +1,6 @@
+const webpayService = require('../services/webpayService');
 const compraModel = require('../models/compraModel');
+
 exports.realizarCompra = async (req, res) => {
   try {
     const usuarioId = req.user.id_usuario;
@@ -19,3 +21,56 @@ exports.obtenerMisCompras = async (req, res) => {
     res.status(500).json({ error: "Error al obtener compras del usuario." });
   }
 };
+
+exports.pagarConWebpay = async (req, res) => {
+  try {
+    const usuarioId = req.user.id_usuario;
+    const carrito = await compraModel.obtenerCarritoYTotal(usuarioId);
+
+    if (!carrito || carrito.total <= 0) throw new Error('Carrito vacío o sin total');
+
+    // ✅ returnUrl estático (el token lo recibe Webpay vía POST)
+    const returnUrl = `${process.env.FRONT_URL}/webpay/exito`;
+
+    // ✅ token y url se obtienen ahora
+    const { token, url } = await webpayService.iniciarTransaccion(carrito.total, returnUrl);
+
+    res.json({ token, url });
+  } catch (err) {
+    console.error('[WEBPAY][ERROR]', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.confirmarPagoWebpay = async (req, res) => {
+  try {
+    const { token_ws } = req.body;
+    const resultado = await webpayService.confirmarTransaccion(token_ws);
+
+    const autorizado = resultado.status === 'AUTHORIZED' && resultado.response_code === 0;
+
+    if (!autorizado) {
+      return res.status(400).json({ error: 'Transacción no autorizada' });
+    }
+
+    // ✅ Obtiene el ID del usuario autenticado
+    const usuarioId = req.user.id_usuario;
+
+    // ✅ Ejecuta la compra
+    const confirmacion = await compraModel.realizarCompra(usuarioId);
+
+    return res.json({
+      mensaje: 'Compra realizada con éxito.',
+      datos: confirmacion,
+      transaccion: {
+        buyOrder: resultado.buy_order,
+        card: resultado.card_detail,
+        fecha: resultado.transaction_date
+      }
+    });
+  } catch (err) {
+    console.error('[WEBPAY][ERROR][COMMIT]', err);
+    res.status(500).json({ error: 'Error al confirmar la transacción' });
+  }
+};
+
