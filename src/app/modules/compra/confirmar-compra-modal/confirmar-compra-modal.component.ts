@@ -24,33 +24,38 @@ export class ConfirmarCompraModalComponent {
 
   confirmar() {
     this.comprando = true;
-    this.compraService.realizarCompra().subscribe({
-      next: (res: any) => {
-        this.mensaje = `¡Compra realizada! ID: ${res.id_compra}, Total: ${res.total}`;
-        setTimeout(() => {
-          this.cerrado.emit();
-          this.router.navigate(['/perfil']);
-        }, 2000);
+    this.compraService.iniciarPagoWebpay().subscribe({
+      next: ({ token, url }) => {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'token_ws';
+        input.value = token;
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
       },
-      error: (err: any) => {
-        this.mensaje = err.error?.error || 'Error al realizar la compra';
+      error: (err) => {
+        this.mensaje = err.error?.error || 'Error al iniciar Webpay';
         this.comprando = false;
-        console.error('Error al realizar la compra:', err);
+        console.error('Error al iniciar Webpay:', err);
       }
     });
   }
+
 
   get totalCarrito(): number {
     if (!this.carrito?.productos) return 0;
     return this.carrito.productos.reduce((sum: number, p: any) => sum + (p.total || 0), 0);
   }
 
-  public parseNumber(value: any): number {
-    if (typeof value === 'number') return value;
-    if (typeof value === 'string') {
-      // Quita comas y espacios, y puntos de miles si existieran
-      return Number(value.replace(/,/g, '').replace(/\s/g, ''));
-    }
-    return 0;
+public parseNumber(value: any): number {
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    return Number(value.replace(/[^\d.-]+/g, '')); // limpia comas, espacios, $
   }
+  return 0;
+}
 }

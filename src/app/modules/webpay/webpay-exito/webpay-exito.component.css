@@ -1,0 +1,12 @@
+.mensaje-confirmacion {
+  padding: 2rem;
+  border-radius: 8px;
+  margin: 2rem;
+  text-align: center;
+}
+.exito {
+  color: green;
+}
+.error {
+  color: red;
+}
