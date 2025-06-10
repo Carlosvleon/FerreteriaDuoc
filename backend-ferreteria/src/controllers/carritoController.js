@@ -3,12 +3,21 @@ const carritoModel = require('../models/CarritoModel');
 exports.agregarAlCarrito = async (req, res) => {
   try {
     const usuarioId = req.user.id_usuario;
-    const { id_bodega, productos } = req.body;
-    if (!id_bodega || !Array.isArray(productos) || productos.length === 0) {
-      return res.status(400).json({ error: "Debe proporcionar id_bodega y al menos un producto." });
+    const { id_sucursal, productos } = req.body;
+
+    // Validar que cada producto tenga id_producto y cantidad
+    for (const producto of productos) {
+      if (
+        typeof producto.id_producto !== 'number' ||
+        typeof producto.cantidad !== 'number' ||
+        producto.cantidad <= 0
+      ) {
+        return res.status(400).json({ error: "Cada producto debe tener un id_producto y una cantidad válida." });
+      }
     }
 
-    const resultado = await carritoModel.agregarProductos(usuarioId, id_bodega, productos);
+    // Llama al modelo, que debe implementar la lógica de buscar bodegas y descontar stock
+    const resultado = await carritoModel.agregarProductosPorSucursal(usuarioId, id_sucursal, productos);
     res.json(resultado);
   } catch (err) {
     console.error("Error al agregar productos al carrito:", err);

@@ -12,7 +12,7 @@ exports.obtenerTodos = async () => {
 
   for (const producto of productos) {
     const stockResult = await pool.query(
-      `SELECT s.nombre AS nombre_sucursal, bp.stock
+      `SELECT s.id_sucursal, s.nombre AS nombre_sucursal, bp.stock
        FROM bodega_producto bp
        JOIN bodega b ON bp.id_bodega = b.id_bodega
        JOIN sucursal s ON b.id_sucursal = s.id_sucursal

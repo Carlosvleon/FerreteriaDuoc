@@ -20,6 +20,7 @@ const oficioRoutes = require("./routes/oficioRoutes");
 const productoRoutes = require("./routes/productoRoutes");
 const bodegaRoutes = require("./routes/bodegaRoutes");
 const carritoRoutes = require('./routes/carritoRoutes');
+const compraRoutes = require('./routes/compraRoutes');
 
 app.use("/api/test", testRoutes);
 app.use("/api/usuarios", userRoutes); // login, register, cerrar sesión
@@ -28,5 +29,6 @@ app.use("/api/oficios", oficioRoutes); // llamar_oficios, agregar_oficios, actua
 app.use("/api/productos", productoRoutes); // producto, bodega_producto
 app.use("/api/bodegas", bodegaRoutes); // bodega_sucursal
 app.use('/api/carrito', carritoRoutes); // carrito_compras
+app.use('/api/compra', compraRoutes);
 
 module.exports = app;

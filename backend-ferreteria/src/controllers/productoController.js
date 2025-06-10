@@ -5,6 +5,16 @@ exports.getTodosLosProductos = async (req, res) => {
     const productos = await productoModel.obtenerTodos();
     console.log(`🛒 Usuario ${req.user.email} consultó los productos`);
     res.json(productos);
+    productos.forEach(producto => {
+      console.log(`Producto: ${producto.nombre} (ID: ${producto.id_producto})`);
+      if (Array.isArray(producto.stock_por_sucursal)) {
+      producto.stock_por_sucursal.forEach(stock => {
+        console.log(`  Sucursal: ${stock.id_sucursal}, Stock: ${stock.stock}`);
+      });
+      } else {
+      console.log("  Sin información de stock por sucursal.");
+      }
+    });
   } catch (err) {
     console.error("Error al obtener productos:", err);
     res.status(500).json({ error: "Error al obtener productos desde la base de datos." });
