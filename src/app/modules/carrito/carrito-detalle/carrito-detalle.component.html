@@ -15,12 +15,20 @@
         <td>{{ item.nombre }}</td>
         <td>{{ item.codigo_producto }}</td>
         <td>{{ item.cantidad }}</td>
-        <td>{{ item.total  }}</td>
+        <td>{{ item.total }}</td>
       </tr>
     </tbody>
   </table>
 
-  <p class="total">Total general: {{ carrito.total_general  }}</p>
+  <p class="total">Total general: {{ carrito | json }}</p>
+
+  <button (click)="abrirModalCompra()" [disabled]="!carrito?.productos?.length">Comprar</button>
+
+  <app-confirmar-compra-modal
+    *ngIf="modalAbierto"
+    [carrito]="carrito"
+    (cerrado)="cerrarModalCompra()">
+  </app-confirmar-compra-modal>
 </div>
 
 <div *ngIf="!carrito">

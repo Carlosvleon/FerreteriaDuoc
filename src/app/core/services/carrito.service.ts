@@ -17,15 +17,16 @@ export class CarritoService {
       }
     });
   }
-  agregarProducto(idProducto: number, cantidad: number) {
-    return this.http.post(`${this.apiUrl}/api/carrito/agregar`, {
-      id_producto: idProducto,
-      cantidad: cantidad
+
+  agregarProductosPorSucursal(idSucursal: number, productos: { id_producto: number, cantidad: number }[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/api/carrito/`, {
+      id_sucursal: idSucursal,
+      productos: productos
     }, {
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
       }
     });
   }
-
 }

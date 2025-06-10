@@ -6,40 +6,50 @@
   </div>
 </div>
 
-
-
-
-
-<div *ngIf="miPerfil" class="perfil-container">
-<img
-  class="perfil-imagen"
-  src="https://tse1.mm.bing.net/th?id=OIP.rcmXeqCUOiCg54dfU4v9tgHaHa&w=474&h=474&c=7"
-  alt="Foto de perfil">
-
-
-
-  <div class="perfil-nombre">{{ miPerfil.nombre }}</div>
-  
-  <div class="perfil-email">
-    <span class="perfil-etiqueta">Email:</span> {{ miPerfil.email }}
+<div *ngIf="estaAutenticado">
+  <div class="tabs">
+    <button 
+      [class.active]="tab === 'datos'" 
+      (click)="tab = 'datos'">
+      Datos de la cuenta
+    </button>
+    <button 
+      [class.active]="tab === 'compras'" 
+      (click)="tab = 'compras'">
+      Historial de compras
+    </button>
   </div>
 
-  <div class="perfil-rut">
-    <span class="perfil-etiqueta">RUT:</span> {{ miPerfil.rut }}
+  <div [ngSwitch]="tab">
+    <div *ngSwitchCase="'datos'">
+      <div *ngIf="miPerfil" class="perfil-container">
+        <img
+          class="perfil-imagen"
+          src="https://tse1.mm.bing.net/th?id=OIP.rcmXeqCUOiCg54dfU4v9tgHaHa&w=474&h=474&c=7"
+          alt="Foto de perfil">
+        <div class="perfil-nombre">{{ miPerfil.nombre }}</div>
+        <div class="perfil-email">
+          <span class="perfil-etiqueta">Email:</span> {{ miPerfil.email }}
+        </div>
+        <div class="perfil-rut">
+          <span class="perfil-etiqueta">RUT:</span> {{ miPerfil.rut }}
+        </div>
+        <div class="perfil-tipo">
+          <span class="perfil-etiqueta">Tipo de usuario:</span> {{ miPerfil.tipo_usuario_id }}
+        </div>
+        <div class="perfil-fecha">
+          <span class="perfil-etiqueta">Fecha de registro:</span> {{ miPerfil.fecha_registro | date:'longDate' }}
+        </div>
+        <div class="perfil-footer">
+          Datos personales protegidos por el sistema
+        </div>
+        <button class="btn-cerrar-sesion" (click)="cerrarSesion()">
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+    <div *ngSwitchCase="'compras'">
+      <app-historial-compras></app-historial-compras>
+    </div>
   </div>
-
-  <div class="perfil-tipo">
-    <span class="perfil-etiqueta">Tipo de usuario:</span> {{ miPerfil.tipo_usuario_id }}
-  </div>
-
-  <div class="perfil-fecha">
-    <span class="perfil-etiqueta">Fecha de registro:</span> {{ miPerfil.fecha_registro | date:'longDate' }}
-  </div>
-
-  <div class="perfil-footer">
-    Datos personales protegidos por el sistema
-  </div>
-  <button class="btn-cerrar-sesion" (click)="cerrarSesion()">
-    Cerrar sesión
-  </button>
 </div>

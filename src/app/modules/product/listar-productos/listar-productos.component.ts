@@ -33,6 +33,11 @@ export class ListarProductosComponent {
   ngOnInit() {
     this.productoService.getProductos().subscribe({
       next: (productData) => {
+        console.log('Productos obtenidos:', productData);
+        if (!Array.isArray(productData)) {
+          console.error('Formato de datos inválido');
+          return;
+        }
         this.listaProductos = productData;
         this.filterProducts();
       },
@@ -76,15 +81,26 @@ export class ListarProductosComponent {
   }
 
   agregarAlCarrito(producto: any, cantidad: number = 1) {
-    this.carritoService.agregarProducto( producto.id_producto, cantidad).subscribe({
-      next: (res) => {
-        alert('Producto agregado al carrito');
-      },
-      error: (err) => {
-        alert('Error al agregar producto al carrito');
-        console.error(err);
-      }
-    });
+    const productos = [{
+      id_producto: producto.id_producto,
+      cantidad: cantidad
+    }];
+    // Aquí debes obtener el id_sucursal adecuado, por ejemplo, el primero disponible:
+    const id_sucursal = producto.stock_por_sucursal?.[0]?.id_sucursal;
+    if (!id_sucursal) {
+      alert('No se encontró una sucursal válida para este producto');
+      return;
+    }
+this.carritoService.agregarProductosPorSucursal(id_sucursal, productos).subscribe({
+  next: () => {
+    alert('Producto agregado al carrito');
+    this.cerrarModal();
+  },
+  error: (err) => {
+    alert('Error al agregar producto');
+    console.error(err);
+  }
+});
   }
 
 abrirModal(producto: any): void {
@@ -96,11 +112,11 @@ abrirModal(producto: any): void {
 }
 
 actualizarMaxStock(): void {
-  const stockSucursal = this.productoSeleccionado.stock_por_sucursal.find(
-    (s: any)  => s.nombre_sucursal === this.sucursalSeleccionada
+  const producto = this.productoSeleccionado;
+  const sucursal = producto?.stock_por_sucursal?.find(
+    (s: any) => s.id_sucursal === +this.sucursalSeleccionada
   );
-  this.maxStockSucursal = stockSucursal ? stockSucursal.stock : 1;
-
+  this.maxStockSucursal = sucursal ? sucursal.stock : 1;
   if (this.cantidadSeleccionada > this.maxStockSucursal) {
     this.cantidadSeleccionada = this.maxStockSucursal;
   }
@@ -117,10 +133,38 @@ cerrarModal(): void {
 
 confirmarAgregarAlCarrito(): void {
   const producto = this.productoSeleccionado;
+  console.log('Producto seleccionado:', producto);
+  if (!producto) {
+    alert('No se ha seleccionado un producto');
+    return;
+  }
   const cantidad = this.cantidadSeleccionada;
 
+  if (!producto || !producto.stock_por_sucursal || !Array.isArray(producto.stock_por_sucursal)) {
+    alert('Producto o stock no válido');
+    return;
+  }
 
-  this.carritoService.agregarProducto(producto.id_producto, cantidad).subscribe({
+const sucursal = producto.stock_por_sucursal.find(
+  (s: any) => s.id_sucursal === +this.sucursalSeleccionada
+);
+
+  if (!sucursal || !sucursal.id_sucursal) {
+    alert('Sucursal no válida');
+    return;
+  }
+
+  if (cantidad < 1 || cantidad > (sucursal.stock || 0)) {
+    alert('Cantidad no válida');
+    return;
+  }
+
+  const productos = [{
+    id_producto: producto.id_producto,
+    cantidad: cantidad
+  }];
+
+  this.carritoService.agregarProductosPorSucursal(sucursal.id_sucursal, productos).subscribe({
     next: () => {
       alert('Producto agregado al carrito');
       this.cerrarModal();
@@ -130,7 +174,6 @@ confirmarAgregarAlCarrito(): void {
       console.error(err);
     }
   });
-  
 }
 
 

@@ -1,0 +1,36 @@
+.cargando {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #212529;
+}
+.bg-light {
+  background-color: #f8f9fa !important;
+}
+.fw-bold {
+  font-weight: bold;
+}
+.table-sm th, .table-sm td {
+  padding: 0.3rem;
+}
+.bg-dark {
+  background-color: #64696e !important;
+  color: #fff;
+}

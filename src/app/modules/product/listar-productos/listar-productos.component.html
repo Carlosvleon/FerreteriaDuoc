@@ -45,12 +45,12 @@
       </li>
     </ul>
 
-    <label for="sucursal">Seleccionar Sucursal:</label>
-    <select id="sucursal" [(ngModel)]="sucursalSeleccionada" (change)="onSucursalChange()">
-    <option *ngFor="let s of productoSeleccionado?.stock_por_sucursal" [value]="s.nombre_sucursal">
-        {{ s.nombre_sucursal }}
-    </option>
-    </select>
+<label for="sucursal">Seleccionar Sucursal:</label>
+<select id="sucursal" [(ngModel)]="sucursalSeleccionada" (change)="onSucursalChange()">
+  <option *ngFor="let s of productoSeleccionado.stock_por_sucursal" [value]="s.id_sucursal">
+    {{ s.nombre_sucursal || s.Sucursal }}
+  </option>
+</select>
 
     <label for="cantidad">Cantidad:</label>
     <input type="number" [(ngModel)]="cantidadSeleccionada" [max]="maxStockSucursal" min="1" id="cantidad" />

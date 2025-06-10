@@ -1,0 +1,51 @@
+<div class="container mt-4" style="background-color: aliceblue; border: 1px solid #000000; border-radius: 10px; padding: 20px;">
+  <h3 class="mb-4 text-primary">Historial de Compras</h3>
+  <div *ngIf="cargando" class="cargando">
+    <span class="spinner"></span> Cargando historial de compras...
+  </div>
+  <div *ngIf="!cargando">
+    <ng-container *ngIf="compras?.length; else sinCompras">
+      <table class="table table-bordered shadow-sm">
+        <tbody>
+          <ng-container *ngFor="let compra of compras">
+            <!-- Fila principal de la compra -->
+            <tr class="bg-light text-dark fw-bold">
+              <td colspan="4">
+                <span>ID Compra: {{ compra.id_compra }}</span> &nbsp;|&nbsp;
+                <span>Total: ${{ compra.total | number:'1.2-2' }}</span>
+              </td>
+            </tr>
+            <!-- Subtabla de productos -->
+            <tr>
+              <td colspan="4" class="p-0">
+                <table class="table mb-0 table-sm">
+                  <thead>
+                    <tr class="table-secondary bg-dark">
+                      <th>Producto</th>
+                      <th>Precio unitario</th>
+                      <th>Cantidad</th>
+                      <th>Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let prod of compra.productos">
+                      <td>{{ prod.nombre || 'Producto #' + prod.id_producto }}</td>
+                      <td>
+                        ${{ (prod.total / prod.cantidad) | number:'1.2-2' }}
+                      </td>
+                      <td>{{ prod.cantidad }}</td>
+                      <td>${{ prod.total | number:'1.2-2' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </ng-container>
+    <ng-template #sinCompras>
+      <div class="alert alert-info mt-3">No tienes compras registradas.</div>
+    </ng-template>
+  </div>
+</div>

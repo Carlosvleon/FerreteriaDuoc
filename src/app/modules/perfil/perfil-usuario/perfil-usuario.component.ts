@@ -5,13 +5,13 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { environment } from '../../../../environments/environment';
-
+import { HistorialComprasComponent } from '../historial-compras/historial-compras.component';
 
 
 @Component({
   selector: 'app-perfil-usuario',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, HistorialComprasComponent],
   templateUrl: './perfil-usuario.component.html',
   styleUrls: ['./perfil-usuario.component.css']
 })
@@ -19,7 +19,7 @@ import { environment } from '../../../../environments/environment';
 export class PerfilUsuarioComponent implements OnInit {
   miPerfil: any = null;
   estaAutenticado: boolean = false;
-
+  tab: 'datos' | 'compras' = 'datos';
   constructor(private perfilService: PerfilService,
               private http: HttpClient,
               private router: Router,
