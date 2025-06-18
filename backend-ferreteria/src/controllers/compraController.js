@@ -45,7 +45,11 @@ exports.pagarConWebpay = async (req, res) => {
 exports.confirmarPagoWebpay = async (req, res) => {
   try {
     const { token_ws } = req.body;
+    if (!token_ws) {
+      return res.status(400).json({ error: 'Token de transacción es requerido' });
+    }
     const resultado = await webpayService.confirmarTransaccion(token_ws);
+    console.log('[WEBPAY][RESULTADO]', resultado);
 
     const autorizado = resultado.status === 'AUTHORIZED' && resultado.response_code === 0;
 
