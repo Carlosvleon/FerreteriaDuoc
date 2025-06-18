@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -15,7 +15,9 @@ export class CarritoService {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
-    });
+    }).pipe(
+      tap((data: any) => console.log('Datos del carrito:', data))
+    );
   }
 
   agregarProductosPorSucursal(idSucursal: number, productos: { id_producto: number, cantidad: number }[]): Observable<any> {

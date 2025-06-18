@@ -4,10 +4,10 @@
     <div *ngIf="carrito">
       <ul>
         <li *ngFor="let item of carrito.productos">
-          {{ item.nombre }} - Cantidad: {{ item.cantidad }} - Total: {{ parseNumber(item.total) | currency }}
+          {{ item.nombre }} - Cantidad: {{ item.cantidad }} - Total: {{ parseNumber(item.total) | currency:'CLP' }}
         </li>
       </ul>
-      <p><strong>Total:</strong> {{ parseNumber(totalCarrito) | number:'1.2-2' | currency }}</p>
+      <p><strong>Total:</strong> {{ totalCarrito | currency:'CLP' }}</p>
     </div>
     <p>¿Estás seguro que deseas realizar esta compra?</p>
     <div class="modal-actions">

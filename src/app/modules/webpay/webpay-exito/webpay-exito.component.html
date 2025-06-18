@@ -1,3 +1,9 @@
 <div class="mensaje-confirmacion" [ngClass]="{ exito: exito, error: !exito }">
   <p>{{ mensaje }}</p>
 </div>
+
+<div *ngIf="resultado">
+  <p><strong>Número de Orden:</strong> {{ resultado.transaccion?.buyOrder }}</p>
+  <p><strong>Fecha:</strong> {{ resultado.transaccion?.fecha }}</p>
+  <button (click)="redirigirAPerfil()">Ir al perfil</button>
+</div>

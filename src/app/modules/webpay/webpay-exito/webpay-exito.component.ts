@@ -11,9 +11,10 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './webpay-exito.component.html',
   styleUrl: './webpay-exito.component.css'
 })
-export class WebpayExitoComponent {
- mensaje = 'Validando pago...';
+export class WebpayExitoComponent implements OnInit {
+  mensaje = 'Validando pago...';
   exito = false;
+  resultado: any = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -21,28 +22,33 @@ export class WebpayExitoComponent {
     private compraService: CompraService
   ) {}
 
-ngOnInit(): void {
-  const token = this.route.snapshot.queryParamMap.get('token_ws');
-  if (token) {
+  ngOnInit(): void {
+    const token = this.route.snapshot.queryParamMap.get('token_ws');
+
+    if (!token) {
+      this.mensaje = '❌ No se recibió token_ws desde Webpay.';
+      this.exito = false;
+      return;
+    }
+
     this.compraService.confirmarPagoWebpay(token).subscribe({
       next: (res) => {
         this.mensaje = '✅ ¡Compra realizada con éxito!';
+        this.exito = true;
         this.resultado = res;
-        // Redirigir opcionalmente en 3 segundos
+
+        // Opcional: Redirige al perfil en 3 segundos
         setTimeout(() => this.router.navigate(['/perfil']), 3000);
       },
       error: (err) => {
         this.mensaje = '❌ Error al confirmar la compra.';
+        this.exito = false;
         console.error(err);
       }
     });
-  } else {
-    this.mensaje = '❌ No se recibió token_ws desde Webpay.';
   }
-}
-  resultado: any = null;
 
-  redirigirAPerfil() {
+  redirigirAPerfil(): void {
     this.router.navigate(['/perfil']);
   }
 }
