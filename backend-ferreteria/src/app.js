@@ -19,6 +19,7 @@ const productoRoutes = require("./routes/productoRoutes");
 const bodegaRoutes = require("./routes/bodegaRoutes");
 const carritoRoutes = require('./routes/carritoRoutes');
 const compraRoutes = require('./routes/compraRoutes');
+const adminRoutes = require("./routes/adminRoutes"); 
 
 app.use("/api/test", testRoutes);
 app.use("/api/usuarios", userRoutes); // login, register, cerrar sesión
@@ -27,6 +28,7 @@ app.use("/api/oficios", oficioRoutes); // llamar_oficios, agregar_oficios, actua
 app.use("/api/productos", productoRoutes); // producto, bodega_producto
 app.use("/api/bodegas", bodegaRoutes); // bodega_sucursal
 app.use('/api/carrito', carritoRoutes); // carrito_compras
-app.use('/api/compra', compraRoutes);
+app.use('/api/compra', compraRoutes); //todas las compras, compra por id, compra por usuario
+app.use('/api/admin', adminRoutes); // Rutas de administrador
 
 module.exports = app;
