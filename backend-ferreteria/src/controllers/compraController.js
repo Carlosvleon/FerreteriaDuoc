@@ -1,5 +1,5 @@
 const webpayService = require('../services/webpayService');
-const compraModel = require('../models/compraModel');
+const compraModel = require('../models/CompraModel');
 
 exports.realizarCompra = async (req, res) => {
   try {
@@ -29,10 +29,10 @@ exports.pagarConWebpay = async (req, res) => {
 
     if (!carrito || carrito.total <= 0) throw new Error('Carrito vacío o sin total');
 
-    // ✅ returnUrl estático (el token lo recibe Webpay vía POST)
+    //  returnUrl estático (el token lo recibe Webpay vía POST)
     const returnUrl = `${process.env.FRONT_URL}/webpay/exito`;
 
-    // ✅ token y url se obtienen ahora
+    //  token y url se obtienen ahora
     const { token, url } = await webpayService.iniciarTransaccion(carrito.total, returnUrl);
 
     res.json({ token, url });
@@ -57,19 +57,26 @@ exports.confirmarPagoWebpay = async (req, res) => {
       return res.status(400).json({ error: 'Transacción no autorizada' });
     }
 
-    // ✅ Obtiene el ID del usuario autenticado
+    //  Obtiene el ID del usuario autenticado
     const usuarioId = req.user.id_usuario;
 
-    // ✅ Ejecuta la compra
+    //  Ejecuta la compra
     const confirmacion = await compraModel.realizarCompra(usuarioId);
-
+    //  Guarda la transacción Webpay
+    if (confirmacion.exito) {
+      await compraModel.guardarTransaccionWebpay(usuarioId, resultado, confirmacion.id_compra);
+    }
     return res.json({
       mensaje: 'Compra realizada con éxito.',
-      datos: confirmacion,
+      datos: confirmacion, 
       transaccion: {
         buyOrder: resultado.buy_order,
-        card: resultado.card_detail,
-        fecha: resultado.transaction_date
+        amount: resultado.amount,
+        cardLastDigits: resultado.card_detail.card_number,
+        authorizationCode: resultado.authorization_code,
+        transactionDate: resultado.transaction_date,
+        paymentType: resultado.payment_type_code,
+        installments: resultado.installments_number
       }
     });
   } catch (err) {
@@ -77,4 +84,6 @@ exports.confirmarPagoWebpay = async (req, res) => {
     res.status(500).json({ error: 'Error al confirmar la transacción' });
   }
 };
+
+
 

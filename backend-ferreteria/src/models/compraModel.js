@@ -160,3 +160,30 @@ exports.obtenerCarritoYTotal = async (usuarioId) => {
   if (rows.length === 0) return null;
   return { id: rows[0].id_carrito_compras, total: parseFloat(rows[0].total || 0) };
 };
+
+async function guardarTransaccionWebpay(usuarioId, resultado, idCompra) {
+  const { 
+    buy_order, session_id, status, amount, authorization_code, 
+    card_detail, payment_type_code, response_code, installments_number, transaction_date 
+  } = resultado;
+
+  const card_last_digits = card_detail.card_number;
+
+  const transaccion = await pool.query(
+    `INSERT INTO transaccion_webpay (
+      buy_order, session_id, status, amount, authorization_code,
+      card_last_digits, payment_type_code, response_code, installments_number, transaction_date
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+    [buy_order, session_id, status, amount, authorization_code,
+     card_last_digits, payment_type_code, response_code, installments_number, transaction_date]
+  );
+
+  const idTransaccion = transaccion.rows[0].id;
+
+  await pool.query(
+    `INSERT INTO compra_transaccion_webpay (id_compra, id_transaccion) VALUES ($1, $2)`,
+    [idCompra, idTransaccion]
+  );
+}
+
+exports.guardarTransaccionWebpay = guardarTransaccionWebpay;
