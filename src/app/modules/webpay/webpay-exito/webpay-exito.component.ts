@@ -36,9 +36,10 @@ export class WebpayExitoComponent implements OnInit {
         this.mensaje = '✅ ¡Compra realizada con éxito!';
         this.exito = true;
         this.resultado = res;
+        console.log('Resultado de la compra:', res);
 
         // Opcional: Redirige al perfil en 3 segundos
-        setTimeout(() => this.router.navigate(['/perfil']), 3000);
+      //   setTimeout(() => this.router.navigate(['/perfil']), 3000);
       },
       error: (err) => {
         this.mensaje = '❌ Error al confirmar la compra.';
