@@ -7,6 +7,7 @@ import { PerfilUsuarioComponent } from './modules/perfil/perfil-usuario/perfil-u
 import { WebpayExitoComponent } from './modules/webpay/webpay-exito/webpay-exito.component';
 import { AdminGuard } from './core/guards/admin.guard';
 import { AdminPanelComponent } from './modules/admin/admin-panel/admin-panel.component';
+import { AdminProductoComponent } from './modules/admin/admin-producto/admin-producto.component';
 
 export const routes: Routes = [
     // se declara temporalmente el path "" como login
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'webpay-rechazo', redirectTo: 'webpay/rechazo', pathMatch: 'full' },
 
   // rutas admin
-  { path: 'admin', component: AdminPanelComponent, canActivate: [AdminGuard] }
+  { path: 'admin', component: AdminPanelComponent, canActivate: [AdminGuard] },
+  { path: 'admin/productos', component: AdminProductoComponent, canActivate: [AdminGuard] }
 ];
 

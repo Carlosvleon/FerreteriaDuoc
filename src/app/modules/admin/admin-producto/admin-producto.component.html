@@ -1,0 +1,32 @@
+<h1>Lista de productos</h1>
+<div *ngIf="mensaje" [ngClass]="{ 'mensaje-exito': tipoMensaje === 'success', 'mensaje-error': tipoMensaje === 'error' }">
+  {{ mensaje }}
+</div>
+
+<button (click)="mostrarModal = true">Nuevo producto</button>
+<p *ngIf="productos.length === 0">Cargando productos...</p>
+
+<div *ngFor="let producto of productos" class="producto-card">
+  <h3>{{ producto.nombre }} ({{ producto.codigoProducto }})</h3>
+  <p>Marca: {{ producto.marca }} | Modelo: {{ producto.modelo }} | Categoría: {{ producto.categoria }}</p>
+  <p>Precio Online: ${{ producto.precioOnline }}</p>
+
+  <div *ngFor="let sedeId of getSedeIds(producto.sedes)">
+    <h4>Sede: {{ producto.sedes[sedeId].nombreSucursal }}</h4>
+
+    <ul>
+      <li *ngFor="let bodega of producto.sedes[sedeId].bodegas">
+        Bodega: {{ bodega.nombreBodega }} -
+        Stock: {{ bodega.stock }}
+        <!-- <button (click)="verDetalles(producto, bodega)">Ver</button>
+        <button (click)="editarProducto(producto, bodega)">Editar</button> -->
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="modal" *ngIf="mostrarModal">
+  <div class="modal-contenido">
+    <button (click)="mostrarModal = false">X</button>
+    <app-admin-producto-form (productoCreado)="onProductoCreado($event)" />
+  </div>
+</div>
