@@ -37,7 +37,6 @@ exports.obtenerPorBodega = async (id_bodega, id_sucursal) => {
        s.nombre AS "Sucursal",
        b.nombre AS "Bodega",
        bp.fecha_modificacion AS "Fecha",
-       bp.ultimo_precio AS "Precio",
        po.precio AS "Precio Online"
      FROM bodega_producto bp
      JOIN producto p ON bp.id_producto = p.id_producto

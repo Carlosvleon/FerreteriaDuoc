@@ -13,15 +13,14 @@ router.post("/bodega_sucursal", authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT 
-         p.codigo_producto AS "Código del producto",
-         ma.nombre AS "Marca",
-         p.nombre AS "Nombre",
-         mo.nombre AS "Modelo",
-         bp.stock AS "Stock",
-         s.nombre AS "Sucursal",
-         b.nombre AS "Bodega",
-         bp.fecha_modificacion AS "Fecha",
-         bp.ultimo_precio AS "Precio"
+       p.codigo_producto AS "Código del producto",
+       ma.nombre AS "Marca",
+       p.nombre AS "Nombre",
+       mo.nombre AS "Modelo",
+       bp.stock AS "Stock",
+       s.nombre AS "Sucursal",
+       b.nombre AS "Bodega",
+       bp.fecha_modificacion AS "Fecha"
        FROM bodega_producto bp
        JOIN producto p ON bp.id_producto = p.id_producto
        JOIN bodega b ON bp.id_bodega = b.id_bodega

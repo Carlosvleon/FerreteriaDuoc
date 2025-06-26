@@ -39,7 +39,7 @@ router.post("/carrito_compras", authMiddleware, async (req, res) => {
       const { codigo_producto, cantidad } = item;
 
       const { rows: productoRows } = await client.query(
-        `SELECT p.id_producto, bp.stock, bp.ultimo_precio
+        `SELECT p.id_producto, bp.stock
          FROM producto p
          JOIN bodega_producto bp ON bp.id_producto = p.id_producto
          WHERE p.codigo_producto = $1 AND bp.id_bodega = $2`,
@@ -50,13 +50,24 @@ router.post("/carrito_compras", authMiddleware, async (req, res) => {
         throw new Error(`Producto con código ${codigo_producto} no existe o no está en la bodega`);
       }
 
-      const { id_producto, stock, ultimo_precio } = productoRows[0];
+      const { id_producto, stock } = productoRows[0];
 
       if (cantidad > stock) {
         throw new Error(`Stock insuficiente para el producto ${codigo_producto}`);
       }
 
-      const total = parseFloat(ultimo_precio) * cantidad;
+
+      // Por ejemplo, podrías obtenerlo de la tabla producto:
+      const { rows: precioRows } = await client.query(
+        `SELECT precio FROM producto WHERE id_producto = $1`,
+        [id_producto]
+      );
+      if (precioRows.length === 0) {
+        throw new Error(`No se encontró el precio para el producto ${codigo_producto}`);
+      }
+      const precio = parseFloat(precioRows[0].precio);
+
+      const total = precio * cantidad;
       totalCarrito += total;
 
       // Verificar si el producto ya está en el carrito
@@ -69,7 +80,7 @@ router.post("/carrito_compras", authMiddleware, async (req, res) => {
       if (detalleRows.length > 0) {
         // Ya existe → actualizar cantidad y total
         const nuevaCantidad = detalleRows[0].cantidad + cantidad;
-        const nuevoTotal = nuevaCantidad * parseFloat(ultimo_precio);
+        const nuevoTotal = nuevaCantidad * precio;
 
         await client.query(
           `UPDATE detalle_carrito_compras
