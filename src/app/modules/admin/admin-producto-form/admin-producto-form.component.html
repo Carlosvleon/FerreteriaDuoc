@@ -1,0 +1,46 @@
+<form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
+  <label>Código de producto:
+    <input formControlName="codigoProducto" />
+  </label>
+
+  <label>Nombre:
+    <input formControlName="nombre" />
+  </label>
+
+  <label>Marca:
+    <select formControlName="idMarca">
+      <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
+    </select>
+    <button type="button" (click)="abrirModal('marca')">+</button>
+  </label>
+
+  <label>Modelo:
+    <select formControlName="idModelo">
+      <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
+    </select>
+    <button type="button" (click)="abrirModal('modelo')">+</button>
+  </label>
+
+  <label>Categoría:
+    <select formControlName="idCategoria">
+      <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
+    </select>
+    <button type="button" (click)="abrirModal('categoria')">+</button>
+  </label>
+
+  <label>Precio Online:
+    <input type="number" formControlName="precioOnline" />
+  </label>
+
+  <button type="submit" [disabled]="productoForm.invalid">Crear Producto</button>
+</form>
+
+<!-- Modal básico -->
+<div *ngIf="modalTipo" class="modal">
+  <div class="modal-content">
+    <h3>Nueva {{ modalTipo }}</h3>
+    <input [(ngModel)]="nuevoNombre" placeholder="Nombre" />
+    <button (click)="crearEntidad()">Guardar</button>
+    <button (click)="cerrarModal()">Cancelar</button>
+  </div>
+</div>

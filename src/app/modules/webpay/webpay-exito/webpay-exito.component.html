@@ -1,0 +1,33 @@
+<div class="mensaje-confirmacion" [ngClass]="{ exito: exito, error: !exito }">
+  <p>{{ mensaje }}</p>
+</div>
+
+<div *ngIf="exito && resultado" class="voucher">
+  <h2>Comprobante de Compra</h2>
+  <div class="voucher-info">
+    <p><strong>N° Orden:</strong> {{ resultado.transaccion?.buyOrder }}</p>
+    <p><strong>Fecha:</strong> {{ resultado.transaccion?.fecha | date:'medium' }}</p>
+    <p><strong>ID Compra:</strong> {{ resultado.datos?.id_compra }}</p>
+    <p><strong>Total:</strong> ${{ resultado.datos?.total }}</p>
+  </div>
+  <div *ngIf="resultado.datos?.productos?.length">
+    <h3>Productos</h3>
+    <table class="voucher-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prod of resultado.datos.productos">
+          <td>{{ prod.nombre }}</td>
+          <td>{{ prod.cantidad }}</td>
+          <td>${{ prod.total }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <button (click)="redirigirAPerfil()">Ir al perfil</button>
+</div>

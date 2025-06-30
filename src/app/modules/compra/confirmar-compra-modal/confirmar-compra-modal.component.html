@@ -1,0 +1,19 @@
+<div class="modal-backdrop">
+  <div class="modal">
+    <h2>Confirmar Compra</h2>
+    <div *ngIf="carrito">
+      <ul>
+        <li *ngFor="let item of carrito.productos">
+          {{ item.nombre }} - Cantidad: {{ item.cantidad }} - Total: {{ parseNumber(item.total) | currency:'CLP' }}
+        </li>
+      </ul>
+      <p><strong>Total:</strong> {{ totalCarrito | currency:'CLP' }}</p>
+    </div>
+    <p>¿Estás seguro que deseas realizar esta compra?</p>
+    <div class="modal-actions">
+      <button type="button" (click)="cancelar()" [disabled]="comprando">No</button>
+      <button type="button" (click)="confirmar()" [disabled]="comprando">Sí</button>
+    </div>
+    <div *ngIf="mensaje" class="mensaje">{{mensaje}}</div>
+  </div>
+</div>

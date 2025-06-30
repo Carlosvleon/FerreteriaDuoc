@@ -1,0 +1,41 @@
+.tabla-productos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tabla-productos th, .tabla-productos td {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-contenido {
+  background: white;
+  padding: 16px;
+  border-radius: 6px;
+  width: 400px;
+}
+.mensaje-exito {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-left: 4px solid #28a745;
+}
+
+.mensaje-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-left: 4px solid #dc3545;
+}
