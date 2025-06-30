@@ -1,0 +1,67 @@
+<h2>Editar Producto</h2>
+
+<div *ngIf="mensaje" class="mensaje">{{ mensaje }}</div>
+
+<form [formGroup]="productoForm" (ngSubmit)="guardarCambios()">
+  <label>Código de producto:
+    <input formControlName="codigoProducto" />
+  </label>
+
+  <label>Nombre:
+    <input formControlName="nombre" />
+  </label>
+
+  <label>Marca:
+    <select formControlName="idMarca">
+      <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
+    </select>
+  </label>
+
+  <label>Modelo:
+    <select formControlName="idModelo">
+      <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
+    </select>
+  </label>
+
+  <label>Categoría:
+    <select formControlName="idCategoria">
+      <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
+    </select>
+  </label>
+
+  <label>Precio Online:
+    <input type="number" formControlName="precioOnline" />
+  </label>
+  <hr />
+<h3>Stock por Sucursal y Bodega</h3>
+
+<div *ngIf="producto?.sedes">
+  <div *ngFor="let sedeId of getSedeIds(producto.sedes)">
+    <h4>{{ producto.sedes[sedeId].nombreSucursal }}</h4>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Bodega</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let bodega of producto.sedes[sedeId].bodegas">
+          <td>{{ bodega.nombreBodega }}</td>
+          <td>
+           <input type="number"
+                [value]="getStockEditable(bodega.idBodega)"
+                (input)="actualizarStock(bodega.idBodega, $event)" 
+                placeholder="Ingrese stock"
+                title="Stock de la bodega" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+  <button type="submit" [disabled]="productoForm.invalid">Guardar Cambios</button>
+</form>

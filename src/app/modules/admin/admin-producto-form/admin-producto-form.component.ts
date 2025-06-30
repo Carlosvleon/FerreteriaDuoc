@@ -52,31 +52,41 @@ export class AdminProductoFormComponent {
     this.modalTipo = null;
   }
 
-crearEntidad() {
-  if (!this.nuevoNombre.trim() || !this.modalTipo) return;
+  crearEntidad() {
+    if (!this.nuevoNombre.trim() || !this.modalTipo) return;
 
-  const crear = {
-    marca: () => this.adminService.crearMarca(this.nuevoNombre),
-    modelo: () => this.adminService.crearModelo(this.nuevoNombre),
-    categoria: () => this.adminService.crearCategoria(this.nuevoNombre)
-  };
+    const crear = {
+      marca: () => this.adminService.crearMarca(this.nuevoNombre),
+      modelo: () => this.adminService.crearModelo(this.nuevoNombre),
+      categoria: () => this.adminService.crearCategoria(this.nuevoNombre)
+    };
 
-  crear[this.modalTipo]().subscribe({
-    next: () => {
-      alert(`${this.modalTipo} creada correctamente`);
-      this.cargarListas();
-      this.cerrarModal();
-    },
-    error: (err) => {
-      console.error(err);
-      alert(`Error al crear ${this.modalTipo}`);
-    }
-  });
-}
-
+    crear[this.modalTipo]().subscribe({
+      next: () => {
+        alert(`${this.modalTipo} creada correctamente`);
+        this.cargarListas();
+        this.cerrarModal();
+      },
+      error: (err) => {
+        console.error(err);
+        alert(`Error al crear ${this.modalTipo}`);
+      }
+    });
+  }
 
   guardarProducto(): void {
     if (this.productoForm.invalid) return;
-      this.productoCreado.emit(this.productoForm.value); 
+
+    this.adminService.crearProducto(this.productoForm.value).subscribe({
+      next: () => {
+        alert('Producto creado correctamente');
+        this.productoCreado.emit();
+        this.productoForm.reset();
+      },
+      error: err => {
+        alert('Error al crear producto');
+        console.error(err);
+      }
+    });
   }
 }

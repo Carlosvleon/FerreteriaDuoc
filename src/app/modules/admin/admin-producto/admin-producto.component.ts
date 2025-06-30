@@ -2,19 +2,23 @@ import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../../core/services/admin.service';
 import { CommonModule, NgForOf } from '@angular/common';
 import { AdminProductoFormComponent } from '../admin-producto-form/admin-producto-form.component';
+import { AdminProductoEditComponent } from '../admin-producto-edit/admin-producto-edit.component';
+
 
 @Component({
   selector: 'app-admin-producto',
   standalone: true,
   templateUrl: './admin-producto.component.html',
   styleUrls: ['./admin-producto.component.css'],
-  imports: [NgForOf, CommonModule, AdminProductoFormComponent], // puedes agregar módulos aquí si necesitas
+  imports: [NgForOf, CommonModule, AdminProductoFormComponent, AdminProductoEditComponent],
 })
 export class AdminProductoComponent implements OnInit {
   productos: any[] = [];
   mostrarModal = false;
   mensaje: string | null = null;
   tipoMensaje: 'success' | 'error' | null = null;
+  mostrarModalEdicion = false;
+  productoSeleccionado: any = null;
 
   constructor(private adminService: AdminService) {}
 
@@ -31,26 +35,39 @@ export class AdminProductoComponent implements OnInit {
       error: (err) => console.error('Error al listar productos', err),
     });
   }
+
   getSedeIds(sedes: any): string[] {
     return Object.keys(sedes);
   }
 
   onProductoCreado(data: any): void {
-  this.adminService.crearProducto(data).subscribe({
-    next: () => {
-      this.mensaje = 'Producto creado correctamente';
-      this.tipoMensaje = 'success';
-      this.obtenerProductos();
-      this.mostrarModal = false;
-      setTimeout(() => this.mensaje = null, 4000); // ocultar después de 4 segundos
-    },
-    error: err => {
-      console.error(err);
-      this.mensaje = 'Error al crear producto: ' + (err.error?.detalle || 'Error desconocido');
-      this.tipoMensaje = 'error';
-      setTimeout(() => this.mensaje = null, 5000);
-    }
-  });
-}
+    this.adminService.crearProducto(data).subscribe({
+      next: () => {
+        this.obtenerProductos();
+        this.mostrarModal = false;
+        this.mensaje = 'Producto creado correctamente';
+        this.tipoMensaje = 'success';
+        setTimeout(() => this.mensaje = null, 4000);
+      },
+      error: (err) => {
+        this.mensaje = 'Error al crear producto';
+        this.tipoMensaje = 'error';
+        setTimeout(() => this.mensaje = null, 4000);
+        console.error(err);
+      }
+    });
+  }
+  abrirModalEdicion(producto: any): void {
+    this.productoSeleccionado = producto;
+    this.mostrarModalEdicion = true;
+  }
 
+  cerrarModalEdicion(): void {
+    this.productoSeleccionado = null;
+    this.mostrarModalEdicion = false;
+  }
+  onProductoEditado(): void {
+  this.obtenerProductos();
+  this.cerrarModalEdicion();
+}
 }

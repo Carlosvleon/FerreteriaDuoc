@@ -13,20 +13,32 @@
 
   <div *ngFor="let sedeId of getSedeIds(producto.sedes)">
     <h4>Sede: {{ producto.sedes[sedeId].nombreSucursal }}</h4>
-
     <ul>
       <li *ngFor="let bodega of producto.sedes[sedeId].bodegas">
-        Bodega: {{ bodega.nombreBodega }} -
-        Stock: {{ bodega.stock }}
-        <!-- <button (click)="verDetalles(producto, bodega)">Ver</button>
-        <button (click)="editarProducto(producto, bodega)">Editar</button> -->
+        Bodega: {{ bodega.nombreBodega }} - Stock: {{ bodega.stock }}
       </li>
     </ul>
   </div>
+
+  <button (click)="abrirModalEdicion(producto)">Editar</button>
+
 </div>
+
+
 <div class="modal" *ngIf="mostrarModal">
   <div class="modal-contenido">
     <button (click)="mostrarModal = false">X</button>
     <app-admin-producto-form (productoCreado)="onProductoCreado($event)" />
+  </div>
+</div>
+
+
+<div class="modal" *ngIf="mostrarModalEdicion">
+  <div class="modal-contenido">
+    <button (click)="cerrarModalEdicion()">X</button>
+    <app-admin-producto-edit
+    [producto]="productoSeleccionado"
+    (productoActualizado)="onProductoEditado()"
+  />
   </div>
 </div>

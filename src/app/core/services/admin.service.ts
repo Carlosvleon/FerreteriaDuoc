@@ -94,4 +94,9 @@ listarCategorias(): Observable<any[]> {
   return this.http.get<any[]>(`${this.apiUrl}/categorias`);
 }
 
+  actualizarProducto(id: number, producto: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/productos/${id}`, producto, {
+      headers: this.getAuthHeaders(),
+    });
+  }
 }
