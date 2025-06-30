@@ -21,6 +21,28 @@ exports.listarProductos = async (req, res) => {
     res.status(500).json({ error: 'Error al listar productos', detalle: err.message });
   }
 };
+
+exports.actualizarProducto = async (req, res) => {
+  try {
+    console.log('[ACTUALIZAR] Body recibido:', req.body);
+    const idProducto = parseInt(req.params.id);
+    const { codigoProducto, nombre, idMarca, idModelo, idCategoria, precioOnline, stockPorBodega } = req.body;
+    await productoService.actualizarProducto(idProducto, {
+      codigoProducto,
+      nombre,
+      idMarca,
+      idModelo,
+      idCategoria,
+      precioOnline,
+      stockPorBodega
+    });
+
+    res.status(200).json({ message: 'Producto actualizado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al actualizar producto', detalle: err.message });
+  }
+};
+
 exports.obtenerMarcas = async (req, res) => {
   try {
    const marcas = await productoService.listarMarcas();

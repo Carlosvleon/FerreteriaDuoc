@@ -27,9 +27,6 @@ exports.crearProducto = async (productoData) => {
     precioOnline
   });
 };
-
-
-
 exports.obtenerProductosEstructurados = async () => {
   const productos = await productoModel.obtenerProductosConDetalles();
 
@@ -39,10 +36,13 @@ exports.obtenerProductosEstructurados = async () => {
     if (!estructurado[row.id_producto]) {
       estructurado[row.id_producto] = {
         idProducto: row.id_producto,
-        nombre: row.nombre_producto,
         codigoProducto: row.codigo_producto,
+        nombre: row.nombre_producto,
+        idMarca: row.id_marca,
         marca: row.marca,
+        idModelo: row.id_modelo,
         modelo: row.modelo,
+        idCategoria: row.id_categoria,
         categoria: row.categoria,
         precioOnline: row.precio_online,
         sedes: {}
@@ -67,6 +67,35 @@ exports.obtenerProductosEstructurados = async () => {
 
   return Object.values(estructurado);
 };
+
+exports.actualizarProducto = async (idProducto, datos) => {
+  const {
+    codigoProducto,
+    nombre,
+    idMarca,
+    idModelo,
+    idCategoria,
+    precioOnline,
+    stockPorBodega
+  } = datos;
+
+  if (!codigoProducto || !nombre || !idMarca || !idModelo || !idCategoria || precioOnline == null) {
+    throw new Error('Faltan campos obligatorios');
+  }
+
+  return await productoModel.actualizarProducto(idProducto, {
+    codigoProducto,
+    nombre,
+    idMarca,
+    idModelo,
+    idCategoria,
+    precioOnline,
+    stockPorBodega
+  });
+};
+
+
+
 exports.listarMarcas = async () => {
   return await productoModel.listarMarcas();
 };

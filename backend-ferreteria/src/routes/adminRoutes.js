@@ -16,12 +16,13 @@ router.get('/transacciones', authMiddleware, adminMiddleware, adminTransaccionCo
 // Productos
 router.post('/productos', authMiddleware, adminMiddleware, adminProductoController.crearProducto);
 router.get('/productos', authMiddleware, adminMiddleware, adminProductoController.listarProductos);
-router.get('/marcas', authMiddleware, adminMiddleware, adminProductoController.obtenerMarcas);
-router.get('/modelos', authMiddleware, adminMiddleware, adminProductoController.obtenerModelos);
-router.get('/categorias', authMiddleware, adminMiddleware, adminProductoController.obtenerCategorias);
+router.put('/productos/:id', authMiddleware, adminMiddleware, adminProductoController.actualizarProducto);
 router.post('/marcas', authMiddleware, adminMiddleware, adminProductoController.crearMarca);
+router.get('/marcas', authMiddleware, adminMiddleware, adminProductoController.obtenerMarcas);
 router.post('/modelos', authMiddleware, adminMiddleware, adminProductoController.crearModelo);
+router.get('/modelos', authMiddleware, adminMiddleware, adminProductoController.obtenerModelos);
 router.post('/categorias', authMiddleware, adminMiddleware, adminProductoController.crearCategoria);
+router.get('/categorias', authMiddleware, adminMiddleware, adminProductoController.obtenerCategorias);
 
 
 
