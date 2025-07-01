@@ -332,24 +332,34 @@
 <!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<nav class="navbar">
-  <span class="title">Ferreteria Duoc</span>
-  <a mat-button href="/login">
-    Inicio de sesión
-  </a>
-  <a mat-button href="/carrito">
-    Ver Carrito
-  </a>
-  <a mat-button href="/productos">
-    Ver Productos
-  </a>
-  <a mat-button href="/register">
-    Registrarse
-  </a>
-   <a mat-button href="/perfil">
-    Mi perfil
-  </a>
-  
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#">Ferretería Duoc</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/login">Inicio de sesión</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/carrito">Ver Carrito</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/productos">Ver Productos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/register">Registrarse</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/perfil">Mi perfil</a>
+        </li>
+      </ul>
+    </div>
+  </div>
 </nav>
 
 <router-outlet></router-outlet>

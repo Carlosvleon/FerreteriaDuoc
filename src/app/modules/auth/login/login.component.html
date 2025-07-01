@@ -1,9 +1,44 @@
-<div class="login-container">
-  <h1>Iniciar sesión</h1>
-  <p *ngIf="errorMessage" class="error">{{ errorMessage }}</p>
-  <form #loginForm="ngForm" (ngSubmit)="login(email.value, password.value)">
-    <input type="email" name="email" #email="ngModel" ngModel placeholder="Correo" required>
-    <input type="password" name="password" #password="ngModel" ngModel placeholder="Contraseña" required>
-    <button type="submit">Iniciar sesión</button>
-  </form>
+<div class="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
+  <div class="card p-4 shadow" style="width: 100%; max-width: 400px; border-top: 4px solid #0d6efd;">
+    <h3 class="text-center mb-4 text-primary">Iniciar sesión</h3>
+
+    <p *ngIf="errorMessage" class="alert alert-danger py-2 text-center">{{ errorMessage }}</p>
+
+    <form #loginForm="ngForm" (ngSubmit)="login(email.value, password.value)">
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          #email="ngModel"
+          ngModel
+          class="form-control"
+          placeholder="correo@ejemplo.cl"
+          required
+        >
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          #password="ngModel"
+          ngModel
+          class="form-control"
+          placeholder="********"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
+    </form>
+
+    <div class="mt-3 text-center">
+      <span>¿No tienes cuenta?</span>
+      <a routerLink="/register" class="text-decoration-none text-primary fw-semibold">Regístrate</a>
+    </div>
+  </div>
 </div>
