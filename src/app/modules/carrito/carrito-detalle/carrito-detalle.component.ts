@@ -30,12 +30,12 @@ export class CarritoDetalleComponent implements OnInit {
     });
   }
 
-  abrirModalCompra() {
-    this.modalAbierto = true;
-  }
+  // abrirModalCompra() {
+  //   this.modalAbierto = true;
+  // }
 
-  cerrarModalCompra() {
-    this.modalAbierto = false;
-    this.ngOnInit(); // Opcional: recargar el carrito tras la compra
-  }
+  // cerrarModalCompra() {
+  //   this.modalAbierto = false;
+  //   this.ngOnInit(); // Opcional: recargar el carrito tras la compra
+  // }
 }

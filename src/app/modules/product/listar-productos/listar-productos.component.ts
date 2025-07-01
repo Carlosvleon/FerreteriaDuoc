@@ -94,7 +94,7 @@ export class ListarProductosComponent {
 this.carritoService.agregarProductosPorSucursal(id_sucursal, productos).subscribe({
   next: () => {
     alert('Producto agregado al carrito');
-    this.cerrarModal();
+    // this.cerrarModal();
   },
   error: (err) => {
     alert('Error al agregar producto');
@@ -126,10 +126,10 @@ onSucursalChange(): void {
 }
 
 
-cerrarModal(): void {
-  this.modalAbierto = false;
-  this.productoSeleccionado = null;
-}
+// cerrarModal(): void {
+//   this.modalAbierto = false;
+//   this.productoSeleccionado = null;
+// }
 
 confirmarAgregarAlCarrito(): void {
   const producto = this.productoSeleccionado;
@@ -167,7 +167,7 @@ const sucursal = producto.stock_por_sucursal.find(
   this.carritoService.agregarProductosPorSucursal(sucursal.id_sucursal, productos).subscribe({
     next: () => {
       alert('Producto agregado al carrito');
-      this.cerrarModal();
+      // this.cerrarModal();
     },
     error: (err) => {
       alert('Error al agregar producto');

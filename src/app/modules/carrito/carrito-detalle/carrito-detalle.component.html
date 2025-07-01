@@ -1,36 +1,51 @@
-<div class="carrito-container" *ngIf="carrito">
-  <h2>Carrito de Compras</h2>
+<div class="container py-4" *ngIf="carrito">
+  <h2 class="mb-4 text-primary">Carrito de Compras</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Producto</th>
-        <th>Código</th>
-        <th>Cantidad</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of carrito.productos">
-        <td>{{ item.nombre }}</td>
-        <td>{{ item.codigo_producto }}</td>
-        <td>{{ item.cantidad }}</td>
-        <td>{{ item.total }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle text-center">
+      <thead class="table-dark">
+        <tr>
+          <th>Producto</th>
+          <th>Código</th>
+          <th>Cantidad</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of carrito.productos">
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.codigo_producto }}</td>
+          <td>{{ item.cantidad }}</td>
+          <td>{{ item.total }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  <p class="total">Total general: {{ carrito | json }}</p>
+  <p class="fs-5 fw-bold mt-3 text-end">
+    Total general: {{ carrito | json }}
+  </p>
 
-  <button (click)="abrirModalCompra()" [disabled]="!carrito?.productos?.length">Comprar</button>
+  <!-- <button 
+    class="btn btn-success w-100 mt-3" 
+    (click)="abrirModalCompra()" 
+    [disabled]="!carrito?.productos?.length">
+    Comprar
+  </button> -->
 
+  <button type="button" class="btn btn-primary w-100 mt-3" data-bs-toggle="modal" data-bs-target="#confirmarCompraModal" (click)="abrirModalCompra()">
+   Comprar
+  </button>
+
+  <!-- El modal debe estar siempre en el DOM, no usar *ngIf* -->
   <app-confirmar-compra-modal
-    *ngIf="modalAbierto"
     [carrito]="carrito"
     (cerrado)="cerrarModalCompra()">
   </app-confirmar-compra-modal>
 </div>
 
-<div *ngIf="!carrito">
-  <p>No hay productos en el carrito.</p>
+<div class="container py-4" *ngIf="!carrito">
+  <div class="alert alert-info text-center">
+    No hay productos en el carrito.
+  </div>
 </div>

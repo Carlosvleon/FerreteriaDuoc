@@ -1,11 +1,14 @@
 <div class="container mt-4" style="background-color: aliceblue; border: 1px solid #000000; border-radius: 10px; padding: 20px;">
   <h3 class="mb-4 text-primary">Historial de Compras</h3>
-  <div *ngIf="cargando" class="cargando">
-    <span class="spinner"></span> Cargando historial de compras...
+  <div *ngIf="cargando" class="d-flex align-items-center justify-content-center my-4">
+    <div class="spinner-border text-primary me-2" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <span>Cargando historial de compras...</span>
   </div>
   <div *ngIf="!cargando">
     <ng-container *ngIf="compras?.length; else sinCompras">
-      <table class="table table-bordered shadow-sm">
+      <table class="table table-bordered table-hover shadow-sm rounded">
         <tbody>
           <ng-container *ngFor="let compra of compras">
             <!-- Fila principal de la compra -->
@@ -18,9 +21,9 @@
             <!-- Subtabla de productos -->
             <tr>
               <td colspan="4" class="p-0">
-                <table class="table mb-0 table-sm">
+                <table class="table mb-0 table-sm table-striped align-middle">
                   <thead>
-                    <tr class="table-secondary bg-dark">
+                    <tr class="table-secondary bg-dark text-white">
                       <th>Producto</th>
                       <th>Precio unitario</th>
                       <th>Cantidad</th>
@@ -45,7 +48,7 @@
       </table>
     </ng-container>
     <ng-template #sinCompras>
-      <div class="alert alert-info mt-3">No tienes compras registradas.</div>
+      <div class="alert alert-info mt-3 text-center">No tienes compras registradas.</div>
     </ng-template>
   </div>
 </div>
