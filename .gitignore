@@ -43,12 +43,15 @@ Thumbs.db
 .vscode/settings.json
 src/environments/environment.ts
 
-
+.vscode/
 .env
 package-lock.json
+package.json
+.editorconfig
 node_modules/.package-lock.json
 .vscode/settings.json
 backend-ferreteria/.env
 backend-ferreteria/package-lock.json
 backend-ferreteria/node_modules/.package-lock.json
 backend-ferreteria/.vscode/settings.json
+node_modules/

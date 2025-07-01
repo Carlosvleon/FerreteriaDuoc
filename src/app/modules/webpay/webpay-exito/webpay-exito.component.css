@@ -10,3 +10,45 @@
 .error {
   color: red;
 }
+
+.voucher {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem 1.5rem;
+  border: 2px dashed #888;
+  border-radius: 12px;
+  background: #fafafa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.voucher h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+}
+
+.voucher-info p {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+}
+
+.voucher-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.voucher-table th, .voucher-table td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.4rem 0.2rem;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.voucher-table th {
+  background: #f0f0f0;
+  font-weight: bold;
+}

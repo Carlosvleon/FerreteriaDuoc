@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
+import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-login',
@@ -13,14 +15,25 @@ import { NgIf } from '@angular/common';
 export class LoginComponent {
   errorMessage: string | null = null;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) {}
 
   login(email: string, password: string) {
     this.authService.login({ email, password }).subscribe({
-      // vamos a almacenar el token en el localStorage con nombre token
       next: (response) => {
-        console.log('Login successful', response);
         localStorage.setItem('token', response.token);
+        console.log('Login successful', response);
+
+        // Decodificar token
+        const decoded: any = jwtDecode(response.token);
+        const tipoUsuario = decoded.tipo_usuario;
+
+        // Redirección condicional
+        if (tipoUsuario === 3) {
+          const irAdmin = confirm('Eres administrador. ¿Deseas ir al panel de administración?');
+          this.router.navigate([irAdmin ? '/admin' : '/perfil']);
+        } else {
+          this.router.navigate(['/perfil']);
+        }
       },
       error: (error) => {
         console.error('Login failed', error);
@@ -31,13 +44,8 @@ export class LoginComponent {
 
   logout() {
     this.authService.logout().subscribe({
-      next: (response) => {
-        console.log('Logout successful', response);
-      },
-      error: (error) => {
-        console.error('Logout failed', error);
-      }
+      next: () => console.log('Logout successful'),
+      error: (error) => console.error('Logout failed', error)
     });
   }
-
 }
