@@ -33,14 +33,13 @@
     Comprar
   </button> -->
 
-  <button type="button" class="btn btn-primary w-100 mt-3" data-bs-toggle="modal" data-bs-target="#confirmarCompraModal" (click)="abrirModalCompra()">
+  <button type="button" class="btn btn-primary w-100 mt-3" data-bs-toggle="modal" data-bs-target="#confirmarCompraModal" >
    Comprar
   </button>
 
   <!-- El modal debe estar siempre en el DOM, no usar *ngIf* -->
   <app-confirmar-compra-modal
-    [carrito]="carrito"
-    (cerrado)="cerrarModalCompra()">
+    [carrito]="carrito">
   </app-confirmar-compra-modal>
 </div>
 
