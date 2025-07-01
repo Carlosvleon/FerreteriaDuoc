@@ -46,7 +46,6 @@ src/environments/environment.ts
 .vscode/
 .env
 package-lock.json
-package.json
 .editorconfig
 node_modules/.package-lock.json
 .vscode/settings.json
