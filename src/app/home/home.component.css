@@ -1,0 +1,8 @@
+.home-hero {
+  background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+  color: #fff;
+}
+.card-img-top {
+  height: 180px;
+  object-fit: cover;
+}

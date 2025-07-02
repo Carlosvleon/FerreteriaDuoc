@@ -67,7 +67,22 @@ export class AdminProductoComponent implements OnInit {
     this.mostrarModalEdicion = false;
   }
   onProductoEditado(): void {
-  this.obtenerProductos();
-  this.cerrarModalEdicion();
-}
+    this.obtenerProductos();
+    this.cerrarModalEdicion();
+  }
+
+  getStockSucursal(bodegas: any[]): number {
+    if (!bodegas) return 0;
+    return bodegas.reduce((acc: number, b: any) => acc + (b.stock || 0), 0);
+  }
+
+  getStockTotal(producto: any): number {
+    let total = 0;
+    if (producto.sedes) {
+      for (const sedeId of this.getSedeIds(producto.sedes)) {
+        total += this.getStockSucursal(producto.sedes[sedeId].bodegas);
+      }
+    }
+    return total;
+  }
 }

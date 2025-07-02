@@ -26,4 +26,7 @@ export class AuthService {
   register(user: { nombre: string, email: string, password: string, telefono: string, direccion: string, portada: string, tipo_usuario_id:number, rut:string, genero_id:number }): Observable<any> {
     return this.http.post(`${this.apiUrl}/api/usuarios/register`, user);
   }
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
 }

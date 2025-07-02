@@ -1,32 +1,79 @@
-<<<<<<< HEAD
-# FerreteriaDuoc
-FerreteriaDuoc
-=======
-# FrontendFerreteria
+# Ferretería Ferramas - Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.6.
+Este proyecto es el frontend de la aplicación e-commerce Ferretería Ferramas, desarrollado en Angular 17 y Bootstrap 5.
 
-## Development server
+## Requisitos previos
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Node.js (v18 o superior recomendado)
+- npm (v9 o superior recomendado)
 
-## Code scaffolding
+## Instalación de dependencias
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. Clona el repositorio o descarga el código fuente.
+2. Abre una terminal en la carpeta del proyecto (`FerreteriaDuoc`).
+3. Ejecuta:
 
-## Build
+```bash
+npm install
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Esto instalará todas las dependencias listadas en `package.json`, incluyendo:
 
-## Running unit tests
+- @angular/animations@17.3.12
+- @angular/common@17.3.12
+- @angular/compiler@17.3.12
+- @angular/core@17.3.12
+- @angular/forms@17.3.12
+- @angular/platform-browser@17.3.12
+- @angular/platform-browser-dynamic@17.3.12
+- @angular/router@17.3.12
+- bootstrap@5.3.7
+- jwt-decode@4.0.0
+- rxjs@7.8.2
+- tslib@2.8.1
+- zone.js@0.14.10
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Variables de entorno
 
-## Running end-to-end tests
+Crea o edita el archivo `src/environments/environment.ts` con la siguiente estructura:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3000' // Cambia la URL según tu backend
+};
+```
 
-## Further help
+Asegúrate de que la variable `apiUrl` apunte al backend correspondiente.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
->>>>>>> feature/admin-loginAndTransactionImp
+## Comandos útiles
+
+### Iniciar el servidor de desarrollo
+
+```bash
+ng serve
+```
+
+La aplicación estará disponible en [http://localhost:4200](http://localhost:4200)
+
+### Compilar para producción
+
+```bash
+ng build --configuration production
+```
+
+### Ejecutar tests
+
+```bash
+ng test
+```
+
+## Notas adicionales
+
+- El proyecto utiliza Bootstrap 5 para estilos y componentes visuales.
+- Para personalizar variables de entorno para producción, edita `src/environments/environment.prod.ts`.
+- Si tienes problemas con dependencias, ejecuta `npm install` nuevamente.
+
+---
+
+¡Listo! Ya puedes comenzar a trabajar en el frontend de Ferretería Ferramas.

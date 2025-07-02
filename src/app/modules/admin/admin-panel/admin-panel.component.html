@@ -1,8 +1,13 @@
 <div class="admin-panel">
-  <div class="tabs">
-    <button (click)="tab = 'compras'">Compras</button>
-    <button (click)="tab = 'transacciones'">Transacciones</button>
-  </div>
+
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <button class="nav-link" [ngClass]="{active: tab === 'compras'}" (click)="tab = 'compras'">Compras</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [ngClass]="{active: tab === 'transacciones'}" (click)="tab = 'transacciones'">Transacciones</button>
+    </li>
+  </ul>
 
   <div *ngIf="error" class="error">{{ error }}</div>
 
@@ -10,95 +15,91 @@
   <div *ngIf="tab === 'compras'">
     <h2>Compras</h2>
 
-    <div class="filtros">
-      <label for="busquedaCompra">Buscar</label>
-      <input
-        id="busquedaCompra"
-        type="text"
-        [(ngModel)]="filtrosCompra.busqueda"
-        placeholder="Email o RUT"
-      />
 
-      <label for="fechaInicioCompra">Desde</label>
-      <input
-        id="fechaInicioCompra"
-        type="date"
-        [(ngModel)]="filtrosCompra.fechaInicio"
-      />
-
-      <label for="fechaFinCompra">Hasta</label>
-      <input
-        id="fechaFinCompra"
-        type="date"
-        [(ngModel)]="filtrosCompra.fechaFin"
-      />
-
-      <button (click)="cargarCompras()">Buscar</button>
-    </div>
+    <form class="row g-2 align-items-end mb-3">
+      <div class="col-md-3">
+        <label for="busquedaCompra" class="form-label">Buscar</label>
+        <input id="busquedaCompra" type="text" class="form-control" [(ngModel)]="filtrosCompra.busqueda" name="busquedaCompra" placeholder="Email o RUT" />
+      </div>
+      <div class="col-md-2">
+        <label for="fechaInicioCompra" class="form-label">Desde</label>
+        <input id="fechaInicioCompra" type="date" class="form-control" [(ngModel)]="filtrosCompra.fechaInicio" name="fechaInicioCompra" />
+      </div>
+      <div class="col-md-2">
+        <label for="fechaFinCompra" class="form-label">Hasta</label>
+        <input id="fechaFinCompra" type="date" class="form-control" [(ngModel)]="filtrosCompra.fechaFin" name="fechaFinCompra" />
+      </div>
+      <div class="col-md-2">
+        <button type="button" class="btn btn-primary w-100" (click)="cargarCompras()">Buscar</button>
+      </div>
+    </form>
 
     <p>Compras encontradas: {{ compras.length }}</p>
 
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Usuario</th>
-          <th>Total</th>
-          <th>Fecha</th>
-          <th>Productos</th>
-          <th>Ver más</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let c of compras">
-          <td>{{ c.id_compra }}</td>
-          <td>{{ c.email }}<br />{{ c.rut }}</td>
-          <td>{{ c.total | currency }}</td>
-          <td>{{ c.fecha | date: 'short' }}</td>
-          <td>{{ c.total_productos }}</td>
-          <td><button (click)="verDetalleCompra(c)">Ver Detalle</button></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Usuario</th>
+            <th>Total</th>
+            <th>Fecha</th>
+            <th>Productos</th>
+            <th>Ver más</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of compras">
+            <td>{{ c.id_compra }}</td>
+            <td>{{ c.email }}<br /><small>{{ c.rut }}</small></td>
+            <td>{{ c.total | currency }}</td>
+            <td>{{ c.fecha | date: 'short' }}</td>
+            <td>{{ c.total_productos }}</td>
+            <td><button class="btn btn-outline-info btn-sm" (click)="verDetalleCompra(c)">Ver Detalle</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-    <div class="paginacion">
-      <button (click)="cambiarPaginaCompras(-1)" [disabled]="filtrosCompra.pagina <= 1">Anterior</button>
-      Página {{ filtrosCompra.pagina }} de {{ totalPaginasCompra }}
-      <button (click)="cambiarPaginaCompras(1)" [disabled]="filtrosCompra.pagina >= totalPaginasCompra">Siguiente</button>
+    <div class="d-flex justify-content-between align-items-center my-3">
+      <button class="btn btn-secondary" (click)="cambiarPaginaCompras(-1)" [disabled]="filtrosCompra.pagina <= 1">Anterior</button>
+      <span>Página {{ filtrosCompra.pagina }} de {{ totalPaginasCompra }}</span>
+      <button class="btn btn-secondary" (click)="cambiarPaginaCompras(1)" [disabled]="filtrosCompra.pagina >= totalPaginasCompra">Siguiente</button>
     </div>
   </div>
 
   <!-- MODAL DETALLE DE COMPRA -->
-  <div class="modal" *ngIf="detalleCompraVisible">
-    <div class="modal-content">
-      <span class="close" (click)="cerrarModal()">&times;</span>
-      <h3>Detalle de Compra</h3>
-
-      <div *ngIf="detalleCompra">
-        <p><strong>Usuario:</strong> {{ detalleCompra.compra.email }} ({{ detalleCompra.compra.rut }})</p>
-        <p><strong>Total:</strong> {{ detalleCompra.compra.total | currency }}</p>
-        <p><strong>Fecha:</strong> {{ detalleCompra.compra.fecha | date:'short' }}</p>
-
-        <h4>Productos</h4>
-        <ul>
-          <li *ngFor="let p of detalleCompra.detalle">
-            {{ p.nombre_producto }} - Cant: {{ p.cantidad }} - {{ p.total | currency }}
-          </li>
-        </ul>
-
-        <h4>Transacción Webpay</h4>
-        <ng-container *ngIf="detalleCompra.transaccion; else noTransaccion">
-          <p><strong>Orden:</strong> {{ detalleCompra.transaccion.buy_order }}</p>
-          <p><strong>Monto:</strong> {{ detalleCompra.transaccion.amount | currency }}</p>
-          <p><strong>Estado:</strong> {{ detalleCompra.transaccion.status }}</p>
-          <p><strong>Fecha:</strong> {{ detalleCompra.transaccion.transaction_date | date:'short' }}</p>
-          <p><strong>Últimos 4 dígitos:</strong> {{ detalleCompra.transaccion.card_last_digits }}</p>
-          <p><strong>Código Autorización:</strong> {{ detalleCompra.transaccion.authorization_code }}</p>
-          <p><strong>Tipo Pago:</strong> {{ detalleCompra.transaccion.payment_type_code }}</p>
-        </ng-container>
-        <ng-template #noTransaccion>
-          <p style="color: red;">No hay transacción registrada para esta compra.</p>
-        </ng-template>
+  <div class="modal-backdrop-admin modal fade show d-block" tabindex="-1" *ngIf="detalleCompraVisible">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalle de Compra</h5>
+          <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModal()"></button>
+        </div>
+        <div class="modal-body" *ngIf="detalleCompra">
+          <p><strong>Usuario:</strong> {{ detalleCompra.compra.email }} ({{ detalleCompra.compra.rut }})</p>
+          <p><strong>Total:</strong> {{ detalleCompra.compra.total | currency }}</p>
+          <p><strong>Fecha:</strong> {{ detalleCompra.compra.fecha | date:'short' }}</p>
+          <h6>Productos</h6>
+          <ul class="list-group mb-3">
+            <li class="list-group-item" *ngFor="let p of detalleCompra.detalle">
+              {{ p.nombre_producto }} <span class="badge bg-primary">x{{ p.cantidad }}</span> <span class="float-end">{{ p.total | currency }}</span>
+            </li>
+          </ul>
+          <h6>Transacción Webpay</h6>
+          <ng-container *ngIf="detalleCompra.transaccion; else noTransaccion">
+            <p><strong>Orden:</strong> {{ detalleCompra.transaccion.buy_order }}</p>
+            <p><strong>Monto:</strong> {{ detalleCompra.transaccion.amount | currency }}</p>
+            <p><strong>Estado:</strong> {{ detalleCompra.transaccion.status }}</p>
+            <p><strong>Fecha:</strong> {{ detalleCompra.transaccion.transaction_date | date:'short' }}</p>
+            <p><strong>Últimos 4 dígitos:</strong> {{ detalleCompra.transaccion.card_last_digits }}</p>
+            <p><strong>Código Autorización:</strong> {{ detalleCompra.transaccion.authorization_code }}</p>
+            <p><strong>Tipo Pago:</strong> {{ detalleCompra.transaccion.payment_type_code }}</p>
+          </ng-container>
+          <ng-template #noTransaccion>
+            <p class="text-danger">No hay transacción registrada para esta compra.</p>
+          </ng-template>
+        </div>
       </div>
     </div>
   </div>
@@ -108,69 +109,64 @@
   <div *ngIf="tab === 'transacciones'">
     <h2>Transacciones Webpay</h2>
 
-    <div class="filtros">
-      <label for="busquedaTransaccion">Buscar</label>
-      <input
-        id="busquedaTransaccion"
-        type="text"
-        [(ngModel)]="filtrosTransaccion.busqueda"
-        placeholder="Orden o tarjeta"
-      />
+    <form class="row g-2 align-items-end mb-3">
+      <div class="col-md-3">
+        <label for="busquedaTransaccion" class="form-label">Buscar</label>
+        <input id="busquedaTransaccion" type="text" class="form-control" [(ngModel)]="filtrosTransaccion.busqueda" name="busquedaTransaccion" placeholder="Orden o tarjeta" />
+      </div>
+      <div class="col-md-2">
+        <label for="fechaInicioTrans" class="form-label">Desde</label>
+        <input id="fechaInicioTrans" type="date" class="form-control" [(ngModel)]="filtrosTransaccion.fechaInicio" name="fechaInicioTrans" />
+      </div>
+      <div class="col-md-2">
+        <label for="fechaFinTrans" class="form-label">Hasta</label>
+        <input id="fechaFinTrans" type="date" class="form-control" [(ngModel)]="filtrosTransaccion.fechaFin" name="fechaFinTrans" />
+      </div>
+      <div class="col-md-2">
+        <label for="estadoTrans" class="form-label">Estado</label>
+        <select id="estadoTrans" class="form-select" [(ngModel)]="filtrosTransaccion.status" name="estadoTrans">
+          <option value="">Todos</option>
+          <option value="AUTHORIZED">Autorizada</option>
+          <option value="FAILED">Fallida</option>
+          <option value="REVERSED">Reversada</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="button" class="btn btn-primary w-100" (click)="cargarTransacciones()">Buscar</button>
+      </div>
+    </form>
 
-      <label for="fechaInicioTrans">Desde</label>
-      <input
-        id="fechaInicioTrans"
-        type="date"
-        [(ngModel)]="filtrosTransaccion.fechaInicio"
-      />
-
-      <label for="fechaFinTrans">Hasta</label>
-      <input
-        id="fechaFinTrans"
-        type="date"
-        [(ngModel)]="filtrosTransaccion.fechaFin"
-      />
-
-      <label for="estadoTrans">Estado</label>
-      <select id="estadoTrans" [(ngModel)]="filtrosTransaccion.status">
-        <option value="">Todos</option>
-        <option value="AUTHORIZED">Autorizada</option>
-        <option value="FAILED">Fallida</option>
-        <option value="REVERSED">Reversada</option>
-      </select>
-
-      <button (click)="cargarTransacciones()">Buscar</button>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>Orden</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Últimos dígitos</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of transacciones">
+            <td>{{ t.buy_order }}</td>
+            <td>{{ t.amount | currency }}</td>
+            <td>{{ t.status }}</td>
+            <td>{{ t.transaction_date | date: 'short' }}</td>
+            <td>{{ t.card_last_digits }}</td>
+            <td>
+              <button *ngIf="t.id_compra" class="btn btn-outline-info btn-sm" (click)="verDetalleCompraPorId(t.id_compra)">Ver compra</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Orden</th>
-          <th>Monto</th>
-          <th>Estado</th>
-          <th>Fecha</th>
-          <th>Últimos dígitos</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let t of transacciones">
-          <td>{{ t.buy_order }}</td>
-          <td>{{ t.amount | currency }}</td>
-          <td>{{ t.status }}</td>
-          <td>{{ t.transaction_date | date: 'short' }}</td>
-          <td>{{ t.card_last_digits }}</td>
-          <td>
-            <button *ngIf="t.id_compra" (click)="verDetalleCompraPorId(t.id_compra)">Ver compra</button>
-          </td>
-
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="paginacion">
-      <button (click)="cambiarPaginaTransacciones(-1)" [disabled]="filtrosTransaccion.pagina <= 1">Anterior</button>
-      Página {{ filtrosTransaccion.pagina }} de {{ totalPaginasTransaccion }}
-      <button (click)="cambiarPaginaTransacciones(1)" [disabled]="filtrosTransaccion.pagina >= totalPaginasTransaccion">Siguiente</button>
+    <div class="d-flex justify-content-between align-items-center my-3">
+      <button class="btn btn-secondary" (click)="cambiarPaginaTransacciones(-1)" [disabled]="filtrosTransaccion.pagina <= 1">Anterior</button>
+      <span>Página {{ filtrosTransaccion.pagina }} de {{ totalPaginasTransaccion }}</span>
+      <button class="btn btn-secondary" (click)="cambiarPaginaTransacciones(1)" [disabled]="filtrosTransaccion.pagina >= totalPaginasTransaccion">Siguiente</button>
     </div>
   </div>
 </div>

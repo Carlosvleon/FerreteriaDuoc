@@ -11,7 +11,7 @@
           <th>Total</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody *ngIf="carrito.productos && carrito.productos.length > 0">
         <tr *ngFor="let item of carrito.productos">
           <td>{{ item.nombre }}</td>
           <td>{{ item.codigo_producto }}</td>
@@ -19,11 +19,16 @@
           <td>{{ item.total }}</td>
         </tr>
       </tbody>
+      <tbody *ngIf="!carrito.productos || carrito.productos.length === 0">
+        <tr>
+          <td colspan="4" class="text-center">No hay productos en el carrito.</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
   <p class="fs-5 fw-bold mt-3 text-end">
-    Total general: {{ carrito | json }}
+    Total general: {{ carrito.total_general }}
   </p>
 
   <!-- <button 

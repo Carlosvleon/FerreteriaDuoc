@@ -1,67 +1,137 @@
-<h2>Editar Producto</h2>
-
-<div *ngIf="mensaje" class="mensaje">{{ mensaje }}</div>
-
-<form [formGroup]="productoForm" (ngSubmit)="guardarCambios()">
-  <label>Código de producto:
-    <input formControlName="codigoProducto" />
-  </label>
-
-  <label>Nombre:
-    <input formControlName="nombre" />
-  </label>
-
-  <label>Marca:
-    <select formControlName="idMarca">
-      <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
-    </select>
-  </label>
-
-  <label>Modelo:
-    <select formControlName="idModelo">
-      <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
-    </select>
-  </label>
-
-  <label>Categoría:
-    <select formControlName="idCategoria">
-      <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
-    </select>
-  </label>
-
-  <label>Precio Online:
-    <input type="number" formControlName="precioOnline" />
-  </label>
-  <hr />
-<h3>Stock por Sucursal y Bodega</h3>
-
-<div *ngIf="producto?.sedes">
-  <div *ngFor="let sedeId of getSedeIds(producto.sedes)">
-    <h4>{{ producto.sedes[sedeId].nombreSucursal }}</h4>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Bodega</th>
-          <th>Stock</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let bodega of producto.sedes[sedeId].bodegas">
-          <td>{{ bodega.nombreBodega }}</td>
-          <td>
-           <input type="number"
-                [value]="getStockEditable(bodega.idBodega)"
-                (input)="actualizarStock(bodega.idBodega, $event)" 
-                placeholder="Ingrese stock"
-                title="Stock de la bodega" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div class="container">
+  <h2 class="h4 mb-3">Editar Producto</h2>
+  <div *ngIf="mensaje" class="alert alert-info">{{ mensaje }}</div>
+  <form [formGroup]="productoForm" (ngSubmit)="guardarCambios()" class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label" for="codigoProducto">Código de producto</label>
+      <input
+        id="codigoProducto"
+        class="form-control"
+        formControlName="codigoProducto"
+        title="Ingrese el código del producto"
+        placeholder="Ej: 12345"
+        autocomplete="off"
+        inputmode="text"
+      />
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="nombreProducto">Nombre</label>
+      <input
+        id="nombreProducto"
+        class="form-control"
+        formControlName="nombre"
+        title="Ingrese el nombre del producto"
+        placeholder="Ej: Taladro"
+        autocomplete="off"
+        inputmode="text"
+      />
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="marcaProducto">Marca</label>
+      <select
+        id="marcaProducto"
+        class="form-select"
+        formControlName="idMarca"
+        title="Seleccione la marca"
+      >
+        <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="modeloProducto">Modelo</label>
+      <select
+        id="modeloProducto"
+        class="form-select"
+        formControlName="idModelo"
+        title="Seleccione el modelo"
+      >
+        <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="categoriaProducto">Categoría</label>
+      <select
+        id="categoriaProducto"
+        class="form-select"
+        formControlName="idCategoria"
+        title="Seleccione la categoría"
+      >
+        <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="precioOnline">Precio Online</label>
+      <input
+        id="precioOnline"
+        type="number"
+        class="form-control"
+        formControlName="precioOnline"
+        title="Ingrese el precio online"
+        placeholder="Ej: 19990"
+        autocomplete="off"
+        inputmode="decimal"
+        min="0"
+        step="any"
+      />
+    </div>
+    <div class="col-12">
+      <hr />
+      <h5>Stock por Sucursal y Bodega</h5>
+      <div *ngIf="producto?.sedes">
+        <div *ngFor="let sedeId of getSedeIds(producto.sedes)">
+          <h6>{{ producto.sedes[sedeId].nombreSucursal }}</h6>
+          <ul class="list-group mb-2">
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let bodega of producto.sedes[sedeId].bodegas">
+              {{ bodega.nombreBodega }}
+              <span class="badge bg-primary">{{ bodega.stock }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 text-end">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="productoForm.invalid"
+        title="Guardar los cambios realizados"
+      >
+        Guardar Cambios
+      </button>
+    </div>
+  </form>
 </div>
 
-
-  <button type="submit" [disabled]="productoForm.invalid">Guardar Cambios</button>
-</form>
+<table>
+  <thead>
+    <tr>
+      <th>Sucursal</th>
+      <th>Bodega</th>
+      <th>Stock</th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngIf="producto?.sedes">
+      <ng-container *ngFor="let sedeId of getSedeIds(producto.sedes)">
+        <tr *ngFor="let bodega of producto.sedes[sedeId].bodegas">
+          <td>{{ producto.sedes[sedeId].nombreSucursal }}</td>
+          <td>{{ bodega.nombreBodega }}</td>
+          <td>
+            <input
+              type="number"
+              [value]="getStockEditable(bodega.idBodega)"
+              (input)="actualizarStock(bodega.idBodega, $event)"
+              placeholder="Ingrese stock"
+              title="Stock de la bodega {{ bodega.nombreBodega }}"
+              autocomplete="off"
+              inputmode="numeric"
+              min="0"
+              step="1"
+              [attr.aria-label]="'Stock de la bodega ' + bodega.nombreBodega"
+            />
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+  </tbody>
+</table>

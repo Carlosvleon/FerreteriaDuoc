@@ -1,43 +1,90 @@
-<h1>Lista de productos</h1>
-<div *ngIf="mensaje" [ngClass]="{ 'mensaje-exito': tipoMensaje === 'success', 'mensaje-error': tipoMensaje === 'error' }">
-  {{ mensaje }}
-</div>
-
-<button (click)="mostrarModal = true">Nuevo producto</button>
-<p *ngIf="productos.length === 0">Cargando productos...</p>
-
-<div *ngFor="let producto of productos" class="producto-card">
-  <h3>{{ producto.nombre }} ({{ producto.codigoProducto }})</h3>
-  <p>Marca: {{ producto.marca }} | Modelo: {{ producto.modelo }} | Categoría: {{ producto.categoria }}</p>
-  <p>Precio Online: ${{ producto.precioOnline }}</p>
-
-  <div *ngFor="let sedeId of getSedeIds(producto.sedes)">
-    <h4>Sede: {{ producto.sedes[sedeId].nombreSucursal }}</h4>
-    <ul>
-      <li *ngFor="let bodega of producto.sedes[sedeId].bodegas">
-        Bodega: {{ bodega.nombreBodega }} - Stock: {{ bodega.stock }}
-      </li>
-    </ul>
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">Lista de productos</h1>
+    <button class="btn btn-success" (click)="mostrarModal = true">Nuevo producto</button>
   </div>
-
-  <button (click)="abrirModalEdicion(producto)">Editar</button>
-
-</div>
-
-
-<div class="modal" *ngIf="mostrarModal">
-  <div class="modal-contenido">
-    <button (click)="mostrarModal = false">X</button>
-    <app-admin-producto-form (productoCreado)="onProductoCreado($event)" />
+  <div *ngIf="mensaje" class="alert" [ngClass]="{'alert-success': tipoMensaje === 'success', 'alert-danger': tipoMensaje === 'error'}">
+    {{ mensaje }}
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Marca</th>
+          <th>Modelo</th>
+          <th>Categoría</th>
+          <th>Stock Total</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let producto of productos">
+          <tr>
+            <td>{{ producto.codigoProducto }}</td>
+            <td>{{ producto.nombre }}</td>
+            <td>${{ producto.precioOnline }}</td>
+            <td>{{ producto.marca }}</td>
+            <td>{{ producto.modelo }}</td>
+            <td>{{ producto.categoria }}</td>
+            <td>{{ getStockTotal(producto) }}</td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm" (click)="abrirModalEdicion(producto)">Editar</button>
+            </td>
+          </tr>
+          <!-- Sucursales y bodegas -->
+          <tr *ngFor="let sedeId of getSedeIds(producto.sedes)">
+            <td></td>
+            <td colspan="7" class="ps-4">
+              <div>
+                <span class="fw-bold">- {{ producto.sedes[sedeId].nombreSucursal }}<span class="text-muted">(Stock: {{ getStockSucursal(producto.sedes[sedeId].bodegas) }})</span></span>
+              </div>
+              <div class="ps-4">
+                <div *ngFor="let bodega of producto.sedes[sedeId].bodegas">
+                  <span>-- {{ bodega.nombreBodega }}<span class="text-primary ms-1">Stock: {{ bodega.stock }}</span></span>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+    <p *ngIf="productos.length === 0">Cargando productos...</p>
   </div>
 </div>
 
+<!-- Modal nuevo producto -->
+<div class="modal fade show d-block custom-modal-bg" tabindex="-1" *ngIf="mostrarModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nuevo producto</h5>
+        <button type="button" class="btn-close" (click)="mostrarModal = false" title="Cerrar" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <app-admin-producto-form (productoCreado)="onProductoCreado($event)" />
+      </div>
+    </div>
+  </div>
+</div>
 
-<div class="modal" *ngIf="mostrarModalEdicion">
-  <div class="modal-contenido">
-    <button (click)="cerrarModalEdicion()">X</button>
-    <app-admin-producto-edit
-    [producto]="productoSeleccionado"
+<!-- Modal edición producto -->
+<div class="modal fade show d-block custom-modal-bg" tabindex="-1" *ngIf="mostrarModalEdicion">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar producto</h5>
+        <button type="button" class="btn-close" (click)="cerrarModalEdicion()" title="Cerrar" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <app-admin-producto-edit
+          [producto]="productoSeleccionado"
+      (productoActualizado)="onProductoEditado()"
+    />
+  </div>
+</div>
     (productoActualizado)="onProductoEditado()"
   />
   </div>

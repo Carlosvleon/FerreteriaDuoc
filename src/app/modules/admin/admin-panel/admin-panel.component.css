@@ -56,3 +56,16 @@ th, td {
   font-size: 28px;
   cursor: pointer;
 }
+
+.modal-backdrop-admin {
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

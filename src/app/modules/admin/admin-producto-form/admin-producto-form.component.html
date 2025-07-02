@@ -1,46 +1,63 @@
-<form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
-  <label>Código de producto:
-    <input formControlName="codigoProducto" />
-  </label>
-
-  <label>Nombre:
-    <input formControlName="nombre" />
-  </label>
-
-  <label>Marca:
-    <select formControlName="idMarca">
-      <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
-    </select>
-    <button type="button" (click)="abrirModal('marca')">+</button>
-  </label>
-
-  <label>Modelo:
-    <select formControlName="idModelo">
+<form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="row g-3">
+  <div class="col-md-6">
+    <label class="form-label">Código de producto</label>
+    <input class="form-control" formControlName="codigoProducto" placeholder="Ej: 1234" />
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Nombre</label>
+    <input class="form-control" formControlName="nombre" placeholder="Nombre del producto" />
+  </div>
+  <div class="col-md-4">
+    <label class="form-label" for="selectMarca">Marca</label>
+    <div class="input-group">
+      <select id="selectMarca" class="form-select" formControlName="idMarca">
+        <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
+      </select>
+      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('marca')">+</button>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label">Modelo</label>
+    <div class="input-group">
+      <select class="form-select" formControlName="idModelo" title="Selecciona un modelo">
       <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
-    </select>
-    <button type="button" (click)="abrirModal('modelo')">+</button>
-  </label>
-
-  <label>Categoría:
-    <select formControlName="idCategoria">
+      </select>
+      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('modelo')" title="Agregar nuevo modelo">+</button>
+    </div>
+    </div>
+    <div class="col-md-4">
+    <label class="form-label">Categoría</label>
+    <div class="input-group">
+      <select class="form-select" formControlName="idCategoria" title="Selecciona una categoría">
       <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
-    </select>
-    <button type="button" (click)="abrirModal('categoria')">+</button>
-  </label>
+      </select>
+      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('categoria')" title="Agregar nueva categoría">+</button>
+    </div>
+    </div>
+    <div class="col-md-6">
+    <label class="form-label">Precio Online</label>
+    <input type="number" class="form-control" formControlName="precioOnline" placeholder="Ej: 9990" />
+    </div>
+    <div class="col-12 text-end">
+    <button type="submit" class="btn btn-primary" [disabled]="productoForm.invalid">Crear Producto</button>
+    </div>
+  </form>
 
-  <label>Precio Online:
-    <input type="number" formControlName="precioOnline" />
-  </label>
-
-  <button type="submit" [disabled]="productoForm.invalid">Crear Producto</button>
-</form>
-
-<!-- Modal básico -->
-<div *ngIf="modalTipo" class="modal">
-  <div class="modal-content">
-    <h3>Nueva {{ modalTipo }}</h3>
-    <input [(ngModel)]="nuevoNombre" placeholder="Nombre" />
-    <button (click)="crearEntidad()">Guardar</button>
-    <button (click)="cerrarModal()">Cancelar</button>
+<!-- Modal Bootstrap para nueva entidad -->
+<div *ngIf="modalTipo" class="modal fade show d-block custom-modal-bg" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Nueva {{ modalTipo | titlecase }}</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <input [(ngModel)]="nuevoNombre" class="form-control mb-2" placeholder="Nombre" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="crearEntidad()" [disabled]="!nuevoNombre.trim()">Guardar</button>
+        <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
   </div>
 </div>

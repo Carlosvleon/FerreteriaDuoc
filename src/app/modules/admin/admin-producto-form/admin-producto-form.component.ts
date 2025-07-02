@@ -62,9 +62,14 @@ export class AdminProductoFormComponent {
     };
 
     crear[this.modalTipo]().subscribe({
-      next: () => {
-        alert(`${this.modalTipo} creada correctamente`);
+      next: (entidad: any) => {
         this.cargarListas();
+        // Seleccionar automáticamente la nueva entidad en el dropdown
+        setTimeout(() => {
+          if (this.modalTipo === 'marca') this.productoForm.patchValue({ idMarca: entidad.id });
+          if (this.modalTipo === 'modelo') this.productoForm.patchValue({ idModelo: entidad.id });
+          if (this.modalTipo === 'categoria') this.productoForm.patchValue({ idCategoria: entidad.id });
+        }, 300);
         this.cerrarModal();
       },
       error: (err) => {
