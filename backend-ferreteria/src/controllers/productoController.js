@@ -3,7 +3,8 @@ const productoModel = require('../models/ProductoModel');
 exports.getTodosLosProductos = async (req, res) => {
   try {
     const productos = await productoModel.obtenerTodos();
-    console.log(`🛒 Usuario ${req.user.email} consultó los productos`);
+    const email = req.user ? req.user.email : null;
+    console.log(`🛒 Usuario ${email} consultó los productos`);
     res.json(productos);
     productos.forEach(producto => {
       console.log(`Producto: ${producto.nombre} (ID: ${producto.id_producto})`);
