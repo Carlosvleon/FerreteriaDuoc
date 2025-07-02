@@ -9,6 +9,14 @@
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.0",
     "pg": "^8.16.0",
+    "transbank-sdk": "^6.1.0",
     "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.0.3",
+    "supertest": "^7.1.1"
+  },
+  "scripts": {
+    "test": "jest"
   }
 }
