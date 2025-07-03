@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CarritoService } from '../../../core/services/carrito.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,14 +13,23 @@ import { ConfirmarCompraModalComponent } from '../../compra/confirmar-compra-mod
   styleUrls: ['./carrito-detalle.component.css']
 })
 export class CarritoDetalleComponent implements OnInit {
-
   carrito: any = null;
   modalAbierto = false;
   mensajeError: string | null = null;
+  redireccionando: boolean = false;
 
-  constructor(private carritoService: CarritoService) {}
+  constructor(private carritoService: CarritoService, private router: Router) {}
 
   ngOnInit(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.mensajeError = 'Debes iniciar sesión para ver tu carrito. Serás redirigido en 2 segundos...';
+      this.redireccionando = true;
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 2000);
+      return;
+    }
     this.carritoService.obtenerCarrito().subscribe({
       next: (data) => {
         this.mensajeError = null;

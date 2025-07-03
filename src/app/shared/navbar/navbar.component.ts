@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { RouterModule } from '@angular/router';
 
+import { getTipoUsuarioFromToken } from '../../core/services/auth.util';
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -11,7 +13,13 @@ import { RouterModule } from '@angular/router';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+  tipoUsuario: number | null = null;
+
   constructor(public authService: AuthService) {}
+
+  ngOnInit() {
+    this.tipoUsuario = getTipoUsuarioFromToken();
+  }
 
   onLogout() {
     this.authService.logout().subscribe({

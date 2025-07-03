@@ -10,8 +10,7 @@ import { AdminPanelComponent } from './modules/admin/admin-panel/admin-panel.com
 import { AdminProductoComponent } from './modules/admin/admin-producto/admin-producto.component';
 
 export const routes: Routes = [
-    // se declara temporalmente el path "" como login
- { path: '', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
+  { path: '', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'productos', component: ListarProductosComponent },
