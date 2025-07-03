@@ -8,44 +8,49 @@
   </div>
   <div *ngIf="!cargando">
     <ng-container *ngIf="compras?.length; else sinCompras">
-      <table class="table table-bordered table-hover shadow-sm rounded">
-        <tbody>
-          <ng-container *ngFor="let compra of compras">
-            <!-- Fila principal de la compra -->
-            <tr class="bg-light text-dark fw-bold">
-              <td colspan="4">
-                <span>ID Compra: {{ compra.id_compra }}</span> &nbsp;|&nbsp;
-                <span>Total: ${{ compra.total | number:'1.2-2' }}</span>
-              </td>
-            </tr>
-            <!-- Subtabla de productos -->
-            <tr>
-              <td colspan="4" class="p-0">
-                <table class="table mb-0 table-sm table-striped align-middle">
-                  <thead>
-                    <tr class="table-secondary bg-dark text-white">
-                      <th>Producto</th>
-                      <th>Precio unitario</th>
-                      <th>Cantidad</th>
-                      <th>Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let prod of compra.productos">
-                      <td>{{ prod.nombre || 'Producto #' + prod.id_producto }}</td>
-                      <td>
-                        ${{ (prod.total / prod.cantidad) | number:'1.2-2' }}
-                      </td>
-                      <td>{{ prod.cantidad }}</td>
-                      <td>${{ prod.total | number:'1.2-2' }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover shadow-sm rounded">
+          <tbody>
+            <ng-container *ngFor="let compra of compras">
+              <!-- Fila principal de la compra -->
+              <tr class="bg-light text-dark fw-bold">
+                <td colspan="4">
+                  <span>ID: {{ compra.id_compra }}</span> &nbsp;|&nbsp;
+                  <span>Fecha: {{ compra.fecha | date:'dd/MM/yy' }}</span> &nbsp;|&nbsp;
+                  <span>Total: ${{ compra.total | number:'1.0' }}</span>
+                </td>
+              </tr>
+              <!-- Subtabla de productos -->
+              <tr>
+                <td colspan="4" class="p-0">
+                  <div class="table-responsive">
+                    <table class="table mb-0 table-sm table-striped align-middle">
+                      <thead>
+                        <tr class="table-secondary bg-dark text-white">
+                          <th>Producto</th>
+                          <th>Precio unitario</th>
+                          <th>Cantidad</th>
+                          <th>Subtotal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let prod of compra.productos">
+                          <td>{{ prod.nombre || 'Producto #' + prod.id_producto }}</td>
+                          <td>
+                            ${{ (prod.total / prod.cantidad) | number:'1.2-2' }}
+                          </td>
+                          <td>{{ prod.cantidad }}</td>
+                          <td>${{ prod.total | number:'1.2-2' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
     </ng-container>
     <ng-template #sinCompras>
       <div class="alert alert-info mt-3 text-center">No tienes compras registradas.</div>

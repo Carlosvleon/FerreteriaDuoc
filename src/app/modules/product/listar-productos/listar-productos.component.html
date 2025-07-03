@@ -1,3 +1,4 @@
+
 <div class="container py-4">
   <h1 class="text-center text-primary mb-4">Lista de Productos</h1>
 
@@ -10,141 +11,97 @@
       placeholder="Buscar productos...">
   </div>
 
-  <ul class="list-group mb-4">
-    <li *ngFor="let producto of pagedProductos" class="list-group-item">
-      <div class="producto-item">
-        <h4 class="fw-bold">{{ producto.nombre }}</h4>
-        <p><strong>Código:</strong> {{ producto.codigo_producto }}</p>
-        <p><strong>Marca:</strong> {{ producto.nombre_marca || 'N/A' }}</p>
-        <p><strong>Modelo:</strong> {{ producto.nombre_modelo || 'N/A' }}</p>
-        <p><strong>Categoría:</strong> {{ producto.nombre_categoria || 'N/A' }}</p>
-        <p><strong>Precio:</strong> {{ producto.precio_online | currency }}</p>
-        <!-- <button class="btn btn-outline-primary btn-sm" (click)="abrirModal(producto)">Ver Detalles</button> -->
-         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#miModal" (click)="abrirModal(producto)" >Ver Detalles</button>
-      </div>
-    </li>
-  </ul>
-
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <button class="btn btn-secondary" (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
-    <span>Página {{ currentPage }} de {{ totalPages }}</span>
-    <button class="btn btn-secondary" (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
+  <div *ngIf="mensajeError" class="alert alert-danger text-center mb-3">
+    {{ mensajeError }}
   </div>
 
-  <div class="mb-3">
-    <label for="search" class="form-label">Buscar:</label>
-    <input 
-      type="text" 
-      id="search" 
-      class="form-control" 
-      [(ngModel)]="searchTerm" 
-      (ngModelChange)="filterProducts()" 
-      placeholder="Buscar productos...">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-2 g-4 mb-4">
+    <div *ngFor="let producto of pagedProductos" class="col">
+      <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+        <!-- Recuadro de imagen/stock -->
+        <div class="d-flex align-items-center justify-content-center bg-light" style="height: 180px;">
+          <div class="w-100 h-100 d-flex align-items-center justify-content-center border rounded" style="background: #f8f9fa;">
+            <span class="text-secondary">Imagen/Stock</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h4 class="fw-bold card-title">{{ producto.nombre }}</h4>
+          <p class="mb-1"><strong>Código:</strong> {{ producto.codigo_producto }}</p>
+          <p class="mb-1"><strong>Marca:</strong> {{ producto.nombre_marca || 'N/A' }}</p>
+          <p class="mb-1"><strong>Modelo:</strong> {{ producto.nombre_modelo || 'N/A' }}</p>
+          <p class="mb-1"><strong>Categoría:</strong> {{ producto.nombre_categoria || 'N/A' }}</p>
+          <p class="mb-2"><strong>Precio:</strong> ${{ producto.precio_online | number:'1.0-0' }}</p>
+          <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#miModal" (click)="abrirModal(producto)">Ver Detalles</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 gap-2">
+    <button class="btn btn-secondary w-100 w-sm-auto" (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+    <span class="my-2 my-sm-0">Página {{ currentPage }} de {{ totalPages }}</span>
+    <button class="btn btn-secondary w-100 w-sm-auto" (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
   </div>
 
   <p *ngIf="filteredProductos.length === 0" class="alert alert-warning text-center">No se encontraron productos.</p>
 </div>
 
-<!-- Modal de Detalles -->
-<!-- <div class="modal-backdrop" *ngIf="modalAbierto">
-  <div class="modal bg-white p-4 shadow border rounded" style="max-width: 500px; margin: 100px auto;">
-    <h4 class="text-primary mb-3">Detalles del Producto</h4>
-    <p><strong>Nombre:</strong> {{ productoSeleccionado?.nombre }}</p>
-    <p><strong>Código:</strong> {{ productoSeleccionado?.codigo_producto }}</p>
-    <p><strong>Precio:</strong> {{ productoSeleccionado?.precio_online | currency }}</p>
-
-    <h5 class="mt-4">Stock por Sucursal</h5>
-    <ul class="list-group mb-3">
-      <li *ngFor="let stock of productoSeleccionado?.stock_por_sucursal" class="list-group-item">
-        {{ stock.nombre_sucursal }}: {{ stock.stock }} unidades
-      </li>
-    </ul>
-
-    <div class="mb-3">
-      <label for="sucursal" class="form-label">Seleccionar Sucursal:</label>
-      <select id="sucursal" class="form-select" [(ngModel)]="sucursalSeleccionada" (change)="onSucursalChange()">
-        <option *ngFor="let s of productoSeleccionado.stock_por_sucursal" [value]="s.id_sucursal">
-          {{ s.nombre_sucursal || s.Sucursal }}
-        </option>
-      </select>
-    </div>
-
-    <div class="mb-3">
-      <label for="cantidad" class="form-label">Cantidad:</label>
-      <input 
-        type="number" 
-        class="form-control" 
-        [(ngModel)]="cantidadSeleccionada" 
-        [max]="maxStockSucursal" 
-        min="1" 
-        id="cantidad" />
-      <p *ngIf="cantidadSeleccionada > maxStockSucursal" class="text-danger mt-2">
-        Cantidad supera el stock disponible
-      </p>
-    </div>
-
-    <div class="modal-actions d-flex justify-content-between mt-4">
-      <button class="btn btn-success" (click)="confirmarAgregarAlCarrito()">Agregar al Carrito</button>
-      <button class="btn btn-outline-danger" (click)="cerrarModal()">Cerrar</button>
-    </div>
-  </div>
-</div> -->
-
-
-
-<!-- Botón que abre el modal -->
-
-
 <!-- Modal -->
-<div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="miModalLabel">Título del Modal</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        
-        <h4 class="text-primary mb-3">Detalles del Producto</h4>
-        <p><strong>Nombre:</strong> {{ productoSeleccionado?.nombre }}</p>
-        <p><strong>Código:</strong> {{ productoSeleccionado?.codigo_producto }}</p>
-        <p><strong>Precio:</strong> {{ productoSeleccionado?.precio_online | currency }}</p>
-
-        <h5 class="mt-4">Stock por Sucursal</h5>
-        <ul class="list-group mb-3">
-          <li *ngFor="let stock of productoSeleccionado?.stock_por_sucursal" class="list-group-item">
-            {{ stock.nombre_sucursal }}: {{ stock.stock }} unidades
-          </li>
-        </ul>
-
-        <div class="mb-3">
-          <label for="sucursal" class="form-label">Seleccionar Sucursal:</label>
-          <select id="sucursal" class="form-select" [(ngModel)]="sucursalSeleccionada" (change)="onSucursalChange()">
-            <option *ngFor="let s of productoSeleccionado?.stock_por_sucursal" [value]="s.id_sucursal">
-              {{ s.nombre_sucursal || s.Sucursal }}
-            </option>
-          </select>
+  <div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="miModalLabel">Detalles del Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
+        <div class="modal-body">
+          <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-5 d-flex justify-content-center">
+              <div class="detalle-img-stock rounded d-flex align-items-center justify-content-center mb-3 mb-md-0">
+                <span class="text-secondary">Imagen/Stock</span>
+              </div>
+            </div>
+            <div class="col-12 col-md-7">
+              <p><strong>Nombre:</strong> {{ productoSeleccionado?.nombre }}</p>
+              <p><strong>Código:</strong> {{ productoSeleccionado?.codigo_producto }}</p>
+              <p><strong>Precio:</strong> {{ productoSeleccionado?.precio_online | currency }}</p>
 
-        <div class="mb-3">
-          <label for="cantidad" class="form-label">Cantidad:</label>
-          <input 
-            type="number" 
-            class="form-control" 
-            [(ngModel)]="cantidadSeleccionada" 
-            [max]="maxStockSucursal" 
-            min="1" 
-            id="cantidad" />
-          <p *ngIf="cantidadSeleccionada > maxStockSucursal" class="text-danger mt-2">
-            Cantidad supera el stock disponible
-          </p>
+              <h5 class="mt-4">Stock por Sucursal</h5>
+              <ul class="list-group mb-3">
+                <li *ngFor="let s of getSucursales(productoSeleccionado)" class="list-group-item">
+                  {{ s.nombreSucursal }}: {{ sumarStockTotal(s) }} unidades
+                </li>
+              </ul>
+
+              <div class="mb-3">
+                <label for="sucursal" class="form-label">Seleccionar Sucursal:</label>
+                <select id="sucursal" class="form-select" [(ngModel)]="sucursalSeleccionada" (change)="onSucursalChange()">
+                  <option *ngFor="let s of getSucursales(productoSeleccionado)" [value]="s.idSucursal">
+                    {{ s.nombreSucursal }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="cantidad" class="form-label">Cantidad:</label>
+                <input 
+                  type="number" 
+                  class="form-control" 
+                  [(ngModel)]="cantidadSeleccionada" 
+                  [max]="maxStockSucursal" 
+                  min="1" 
+                  id="cantidad" />
+                <p *ngIf="cantidadSeleccionada > maxStockSucursal" class="text-danger mt-2">
+                  Cantidad supera el stock disponible
+                </p>
+              </div>
+
+              <div class="modal-actions d-flex justify-content-between mt-4">
+                <button class="btn btn-success" (click)="confirmarAgregarAlCarrito()">Agregar al Carrito</button>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div class="modal-actions d-flex justify-content-between mt-4">
-          <button class="btn btn-success" (click)="confirmarAgregarAlCarrito()">Agregar al Carrito</button>
-        </div>
-      </div>
-
       </div>
     </div>
   </div>

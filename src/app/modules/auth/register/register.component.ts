@@ -49,13 +49,21 @@ register(
     rut, 
     genero_id: Number(genero_id) 
   }).subscribe({
-      next: (response) => {
-        console.log('Registration successful', response);
-      },
-      error: (error) => {
-        console.error('Registration failed', error);
+    next: (response) => {
+      console.log('Registration successful', response);
+      this.errorMessage = null;
+    },
+    error: (error) => {
+      console.error('Registration failed', error);
+      // Mostrar mensaje específico si existe, sino mensaje genérico
+      if (error?.error?.error) {
+        this.errorMessage = error.error.error;
+      } else if (error?.error?.message) {
+        this.errorMessage = error.error.message;
+      } else {
         this.errorMessage = 'Error al registrar el usuario';
       }
-    });
+    }
+  });
   }
 }

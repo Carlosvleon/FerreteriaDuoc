@@ -1,3 +1,6 @@
+<div *ngIf="mensajeError" class="alert alert-danger text-center mb-3">
+  {{ mensajeError }}
+</div>
 <div *ngIf="!estaAutenticado" class="bloqueo">
   <div class="bloqueo-mensaje">
     <h2>Acceso denegado</h2>
@@ -5,7 +8,6 @@
     <button class="btn-volver" (click)="volver()">Volver</button>
   </div>
 </div>
-
 <div *ngIf="estaAutenticado">
   <div class="tabs">
     <button 
@@ -19,7 +21,6 @@
       Historial de compras
     </button>
   </div>
-
   <div [ngSwitch]="tab">
     <div *ngSwitchCase="'datos'">
       <div *ngIf="miPerfil" class="perfil-container">

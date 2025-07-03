@@ -15,15 +15,18 @@ export class CarritoDetalleComponent implements OnInit {
 
   carrito: any = null;
   modalAbierto = false;
+  mensajeError: string | null = null;
 
   constructor(private carritoService: CarritoService) {}
 
   ngOnInit(): void {
     this.carritoService.obtenerCarrito().subscribe({
       next: (data) => {
+        this.mensajeError = null;
         this.carrito = data;
       },
       error: (err) => {
+        this.mensajeError = 'Error al obtener el carrito. Intenta nuevamente más tarde.';
         console.error('Error al obtener el carrito', err);
         this.carrito = null;
       }
