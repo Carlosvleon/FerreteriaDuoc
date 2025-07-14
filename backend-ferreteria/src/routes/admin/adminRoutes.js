@@ -9,13 +9,12 @@ const multer = require('multer');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const idProducto = req.params.idProducto;
-    const dir = path.join(__dirname, '../../../uploads/productos/', idProducto);
+    const dir = path.resolve(__dirname, '../../../uploads/productos', idProducto);
     // Crea la carpeta si no existe
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
   filename: function (req, file, cb) {
-    // Le puedes poner un nombre único usando Date.now() o mantener el nombre original
     const ext = path.extname(file.originalname);
     const nombre = Date.now() + ext;
     cb(null, nombre);
