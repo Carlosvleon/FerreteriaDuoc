@@ -10,12 +10,19 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const idProducto = req.params.idProducto;
     const dir = path.join(__dirname, '../../../uploads/productos/', idProducto);
-    // Crea la carpeta si no existe
+    // Asegura la carpeta y elimina imágenes previas antes de guardar la nueva
     fs.mkdirSync(dir, { recursive: true });
+    try {
+      const files = fs.readdirSync(dir);
+      for (const f of files) {
+        fs.unlinkSync(path.join(dir, f));
+      }
+    } catch (e) {
+      console.error('Error limpiando imágenes previas:', e);
+    }
     cb(null, dir);
   },
   filename: function (req, file, cb) {
-    // Le puedes poner un nombre único usando Date.now() o mantener el nombre original
     const ext = path.extname(file.originalname);
     const nombre = Date.now() + ext;
     cb(null, nombre);
