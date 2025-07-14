@@ -1,4 +1,5 @@
 const pool = require('../../db');
+const { v4: uuidv4 } = require('uuid'); 
 
 exports.crearProducto = async (productoData) => {
   const client = await pool.connect();
@@ -213,5 +214,17 @@ exports.repararStockFaltante = async (idProducto) => {
       VALUES ($1, $2, 0, 0)
       ON CONFLICT DO NOTHING
     `, [bodega.id_bodega, idProducto]);
+  }
+};
+
+exports.obtenerRutaImagenPorId = async (idProducto) => {
+  try {
+    // Usando los nombres correctos que indicaste: tabla 'producto', columna 'imagen'.
+    const result = await pool.query('SELECT imagen FROM producto WHERE id_producto = $1', [idProducto]);
+    // ¡CORRECCIÓN CLAVE! Devolver el valor de la columna 'imagen'.
+    return result.rows[0]?.imagen || null;
+  } catch (error) {
+    console.error(`Error al obtener la ruta de la imagen para el producto ${idProducto}:`, error);
+    throw error; // Propaga el error para que el controlador lo maneje
   }
 };

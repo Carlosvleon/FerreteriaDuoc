@@ -1,5 +1,4 @@
 const adminMiddleware = (req, res, next) => {
-  console.log('[ADMIN MIDDLEWARE] Usuario autenticado:', req.user); // ✅ DEBUG
   
   // Asumimos que el tipo_usuario_id = 3 corresponde al rol de Administrador
   if (!req.user || req.user.tipo_usuario !== 3) { 

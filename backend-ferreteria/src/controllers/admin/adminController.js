@@ -3,7 +3,6 @@ const adminCompraModel = require('../../models/admin/adminCompraModel');
 const adminTransaccionModel = require('../../models/admin/adminTransaccionModel');
 const path = require('path');
 const fs = require('fs-extra');
-const productoModel = require('../../models/admin/adminProductModel');
 
 // ========= PRODUCTOS =========
 
@@ -45,28 +44,56 @@ exports.actualizarProducto = async (req, res) => {
 
 exports.subirImagenProducto = async (req, res) => {
   try {
-    const idProducto = req.params.idProducto;
+    const { idProducto } = req.params;
 
     if (!req.file) {
       return res.status(400).json({ error: 'No se envió ninguna imagen' });
     }
 
+    console.log(`[SUBIR IMAGEN] Proceso iniciado para producto ID: ${idProducto} con archivo: ${req.file.filename}`);
 
-    const carpetaProducto = path.join(__dirname, '../../../uploads/productos/', idProducto.toString());
-    if (fs.existsSync(carpetaProducto)) {
-      const archivos = fs.readdirSync(carpetaProducto).filter(f => f !== req.file.filename);
-      for (const file of archivos) {
-        fs.unlinkSync(path.join(carpetaProducto, file));
+    // --- INICIO DE LA LÓGICA CORREGIDA (A PRUEBA DE RACE CONDITIONS) ---
 
+    // 1. Obtener la ruta de la imagen ANTIGUA desde la BD antes de cualquier cambio.
+    // La lógica de BD ahora está encapsulada en el modelo.
+    const rutaImagenAntigua = await adminProductModel.obtenerRutaImagenPorId(idProducto);
+
+    // Log de depuración: Verificamos qué valor se obtuvo de la base de datos.
+    console.log(`[SUBIR IMAGEN] Valor de rutaImagenAntigua obtenido de la BD: ${rutaImagenAntigua}`);
+
+    if (rutaImagenAntigua) {
+      console.log(`[SUBIR IMAGEN] Se encontró imagen antigua en BD: ${rutaImagenAntigua}`);
+    }
+
+    // 2. Actualizar la base de datos con la ruta de la NUEVA imagen.
+    const nuevaRutaImagenDB = `/uploads/productos/${idProducto}/${req.file.filename}`;
+    await adminProductModel.actualizarRutaImagen(idProducto, nuevaRutaImagenDB);
+    console.log(`[SUBIR IMAGEN] Ruta en BD actualizada a: ${nuevaRutaImagenDB}`);
+
+    // 3. Si había una imagen antigua y la BD se actualizó, eliminar el archivo ANTIGUO del sistema.
+    // Esto es seguro porque operamos sobre un nombre de archivo específico.
+    if (rutaImagenAntigua) {
+      // La ruta en la BD es relativa (ej: /uploads/...), necesitamos la ruta absoluta para fs-extra.
+      // Quitamos el slash inicial para que path.join funcione correctamente.
+      const rutaRelativaAntigua = rutaImagenAntigua.startsWith('/') ? rutaImagenAntigua.substring(1) : rutaImagenAntigua;
+      const rutaCompletaArchivoAntiguo = path.join(__dirname, '../../../', rutaRelativaAntigua);
+
+      if (await fs.pathExists(rutaCompletaArchivoAntiguo)) {
+        console.log(`[SUBIR IMAGEN] Eliminando archivo físico antiguo: ${rutaCompletaArchivoAntiguo}`);
+        await fs.remove(rutaCompletaArchivoAntiguo);
+      } else {
+        console.log(`[SUBIR IMAGEN] ADVERTENCIA: El archivo antiguo ${rutaCompletaArchivoAntiguo} no fue encontrado para eliminar.`);
       }
     }
 
-    const rutaImagen = `/uploads/productos/${idProducto}/${req.file.filename}`;
-    await productoModel.actualizarRutaImagen(idProducto, rutaImagen);
-
-    return res.json({ message: 'Imagen subida y asociada correctamente', path: rutaImagen });
+    return res.json({ message: 'Imagen subida y asociada correctamente', path: nuevaRutaImagenDB });
   } catch (error) {
     console.error('Error al subir imagen:', error);
+    // Si algo falla, eliminamos el archivo que se acaba de subir para no dejar basura.
+    if (req.file) {
+      await fs.remove(req.file.path);
+      console.log(`[SUBIR IMAGEN][ROLLBACK] Se eliminó el archivo subido ${req.file.path} debido a un error.`);
+    }
     res.status(500).json({ error: 'Error interno al subir la imagen' });
   }
 };
