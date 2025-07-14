@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-admin-producto-edit',
@@ -17,14 +18,46 @@ import { AdminService } from '../../../core/services/admin.service';
   styleUrls: ['./admin-producto-edit.component.css'],
 })
 export class AdminProductoEditComponent implements OnInit {
-  @Input() producto: any = null;
+  private _producto: any = null;
+
+  @Input() set producto(value: any) {
+    this._producto = value;
+    if (value) {
+      this.productoForm.patchValue({
+        codigoProducto: value.codigoProducto ?? '',
+        nombre: value.nombre ?? '',
+        idMarca: value.idMarca ?? '',
+        idModelo: value.idModelo ?? '',
+        idCategoria: value.idCategoria ?? '',
+        precioOnline: value.precioOnline ?? '',
+        activo: value.activo === true,
+      });
+      this.stockPorBodegaEditable = Array.isArray(value.stock_por_bodega)
+        ? value.stock_por_bodega.map((item: any) => ({
+            idBodega: item.id_bodega,
+            stock: item.stock,
+          }))
+        : [];
+    }
+  }
+  get producto(): any {
+    return this._producto;
+  }
+
   @Output() productoActualizado = new EventEmitter<void>();
+  @Output() cerrarModal = new EventEmitter<void>();
+
   productoForm: FormGroup;
   marcas: any[] = [];
   modelos: any[] = [];
   categorias: any[] = [];
   mensaje: string | null = null;
+  timeoutRef: any;
+  mensajeOculto = false;
   stockPorBodegaEditable: { idBodega: number; stock: number }[] = [];
+  nuevaImagen: File | null = null;
+  nuevaImagenPreview: string | null = null;
+  imgUrl: string = environment.apiUrl;
 
   constructor(private fb: FormBuilder, private adminService: AdminService) {
     this.productoForm = this.fb.group({
@@ -34,9 +67,13 @@ export class AdminProductoEditComponent implements OnInit {
       idModelo: ['', Validators.required],
       idCategoria: ['', Validators.required],
       precioOnline: [null, [Validators.required, Validators.min(0)]],
+      activo: [true],
     });
   }
 
+  cerrar(): void {
+    this.cerrarModal.emit();
+  }
   ngOnInit(): void {
     this.cargarListas();
 
@@ -48,19 +85,18 @@ export class AdminProductoEditComponent implements OnInit {
         idModelo: this.producto.idModelo,
         idCategoria: this.producto.idCategoria,
         precioOnline: this.producto.precioOnline,
+        activo: this.producto.activo === true,
       });
 
-      // preparar stock editable
-      this.stockPorBodegaEditable = [];
-      const sedes = this.producto.sedes || {};
-      Object.values(sedes).forEach((sede: any) => {
-        sede.bodegas.forEach((bodega: any) => {
-          this.stockPorBodegaEditable.push({
-            idBodega: bodega.idBodega,
-            stock: bodega.stock,
-          });
-        });
-      });
+      // Ahora sí: stock editable directo
+      this.stockPorBodegaEditable = Array.isArray(
+        this.producto.stock_por_bodega
+      )
+        ? this.producto.stock_por_bodega.map((item: any) => ({
+            idBodega: item.id_bodega,
+            stock: item.stock,
+          }))
+        : [];
     }
   }
 
@@ -78,31 +114,100 @@ export class AdminProductoEditComponent implements OnInit {
     const item = lista.find((e) => e.nombre === nombre);
     return item?.id || null;
   }
+  mostrarMensajeTemporal(texto: string) {
+    this.mensaje = texto;
 
-  guardarCambios(): void {
-    if (this.productoForm.invalid || !this.producto?.idProducto) return;
+    // Limpia timeout anterior si existe
+    if (this.timeoutRef) clearTimeout(this.timeoutRef);
 
-    const datos = {
-      ...this.productoForm.value,
-      stockPorBodega: this.stockPorBodegaEditable
-    };
-
-    this.adminService.actualizarProducto(this.producto.idProducto, datos).subscribe({
-      next: () => {
-        this.mensaje = 'Producto actualizado correctamente';
-        this.productoForm.markAsPristine(); // Marca como no modificado
-        this.productoActualizado.emit();
-      },
-      error: err => {
-        console.error(err);
-        this.mensaje = 'Error al actualizar producto';
-      }
-    });
+    // Cierra automáticamente después de 2.5 segundos
+    this.timeoutRef = setTimeout(() => {
+      this.cerrarMensaje();
+    }, 2500);
   }
+  cerrarMensaje() {
+    this.mensaje = null;
+    if (this.timeoutRef) clearTimeout(this.timeoutRef);
+  }
+
+guardarCambios(): void {
+  if (this.productoForm.invalid || !this.producto?.id_producto) return;
+
+  const form = this.productoForm.value;
+  const datos = {
+    id_producto: this.producto.id_producto,
+    codigo_producto: form.codigoProducto,
+    nombre_producto: form.nombre,
+    id_marca: form.idMarca,
+    id_modelo: form.idModelo,
+    id_categoria: form.idCategoria,
+    precio_online: form.precioOnline,
+    activo: form.activo,
+    stock_por_bodega: this.stockPorBodegaEditable.map((s) => ({
+      id_bodega: s.idBodega,
+      stock: s.stock,
+    })),
+  };
+
+  this.adminService.actualizarProducto(this.producto.id_producto, datos).subscribe({
+    next: () => {
+      if (this.nuevaImagen) {
+        // Subir imagen después de actualizar datos
+        const formData = new FormData();
+        formData.append('imagen', this.nuevaImagen);
+        this.adminService.subirImagenProducto(this.producto.id_producto, formData).subscribe({
+          next: (resp: any) => {
+            // Actualiza la ruta en el objeto producto (evita caché con timestamp)
+            if (resp?.ruta) {
+              this.producto.imagen = resp.ruta + '?t=' + Date.now();
+            }
+            this.mensaje = 'Producto e imagen actualizados correctamente';
+            this.productoForm.markAsPristine();
+            this.productoActualizado.emit();
+
+            // Fade temporal del mensaje
+            setTimeout(() => (this.mensajeOculto = true), 2500);
+            setTimeout(() => {
+              this.mensaje = null;
+              this.mensajeOculto = false;
+            }, 3000);
+          },
+          error: (err) => {
+            this.mensaje = 'Producto actualizado, pero falló la imagen';
+            this.productoActualizado.emit();
+            setTimeout(() => (this.mensajeOculto = true), 2500);
+            setTimeout(() => {
+              this.mensaje = null;
+              this.mensajeOculto = false;
+            }, 3000);
+          },
+        });
+      } else {
+        // Solo datos, sin imagen
+        this.mensaje = 'Producto actualizado correctamente';
+        this.productoForm.markAsPristine();
+        this.productoActualizado.emit();
+        setTimeout(() => (this.mensajeOculto = true), 2500);
+        setTimeout(() => {
+          this.mensaje = null;
+          this.mensajeOculto = false;
+        }, 3000);
+      }
+    },
+    error: (err) => {
+      this.mensaje = 'Error al actualizar producto';
+      setTimeout(() => (this.mensajeOculto = true), 2500);
+      setTimeout(() => {
+        this.mensaje = null;
+        this.mensajeOculto = false;
+      }, 3000);
+    },
+  });
+}
 
 
   getSedeIds(sedes: any): string[] {
-    return Object.keys(sedes);
+    return sedes ? Object.keys(sedes) : [];
   }
   getStockEditable(idBodega: number): number {
     return (
@@ -117,10 +222,23 @@ export class AdminProductoEditComponent implements OnInit {
 
     if (isNaN(nuevo) || nuevo < 0) return;
 
-    const idx = this.stockPorBodegaEditable.findIndex(b => b.idBodega === idBodega);
+    const idx = this.stockPorBodegaEditable.findIndex(
+      (b) => b.idBodega === idBodega
+    );
     if (idx !== -1) {
       this.stockPorBodegaEditable[idx].stock = nuevo;
     }
   }
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.nuevaImagen = file;
 
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.nuevaImagenPreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 }

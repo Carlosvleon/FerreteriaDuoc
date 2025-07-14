@@ -5,3 +5,9 @@
   margin-bottom: 10px;
   border-left: 4px solid #28a745;
 }
+/* id nuevaImagenPreview */
+#nuevaImagenPreview {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+}

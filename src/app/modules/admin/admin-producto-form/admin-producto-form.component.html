@@ -11,37 +11,58 @@
     <label class="form-label" for="selectMarca">Marca</label>
     <div class="input-group">
       <select id="selectMarca" class="form-select" formControlName="idMarca">
-        <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
+        <option *ngFor="let marca of marcas" [value]="marca.id">
+          {{ marca.nombre }}
+        </option>
       </select>
-      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('marca')">+</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('marca')">
+        +
+      </button>
     </div>
   </div>
   <div class="col-md-4">
     <label class="form-label">Modelo</label>
     <div class="input-group">
       <select class="form-select" formControlName="idModelo" title="Selecciona un modelo">
-      <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
+        <option *ngFor="let modelo of modelos" [value]="modelo.id">
+          {{ modelo.nombre }}
+        </option>
       </select>
-      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('modelo')" title="Agregar nuevo modelo">+</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('modelo')"
+        title="Agregar nuevo modelo">
+        +
+      </button>
     </div>
-    </div>
-    <div class="col-md-4">
+  </div>
+  <div class="col-md-4">
     <label class="form-label">Categoría</label>
     <div class="input-group">
       <select class="form-select" formControlName="idCategoria" title="Selecciona una categoría">
-      <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
+        <option *ngFor="let categoria of categorias" [value]="categoria.id">
+          {{ categoria.nombre }}
+        </option>
       </select>
-      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('categoria')" title="Agregar nueva categoría">+</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="abrirModal('categoria')"
+        title="Agregar nueva categoría">
+        +
+      </button>
     </div>
-    </div>
-    <div class="col-md-6">
+  </div>
+  <div class="col-md-6">
     <label class="form-label">Precio Online</label>
     <input type="number" class="form-control" formControlName="precioOnline" placeholder="Ej: 9990" />
-    </div>
-    <div class="col-12 text-end">
-    <button type="submit" class="btn btn-primary" [disabled]="productoForm.invalid">Crear Producto</button>
-    </div>
-  </form>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Imagen del producto</label>
+    <input aria-label="Imagen del producto" type="file" class="form-control" (change)="onFileChange($event)" accept="image/*" />
+  </div>
+
+  <div class="col-12 text-end">
+    <button type="submit" class="btn btn-primary" [disabled]="productoForm.invalid">
+      Crear Producto
+    </button>
+  </div>
+</form>
 
 <!-- Modal Bootstrap para nueva entidad -->
 <div *ngIf="modalTipo" class="modal fade show d-block custom-modal-bg" tabindex="-1">
@@ -55,8 +76,12 @@
         <input [(ngModel)]="nuevoNombre" class="form-control mb-2" placeholder="Nombre" />
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" (click)="crearEntidad()" [disabled]="!nuevoNombre.trim()">Guardar</button>
-        <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn btn-primary" (click)="crearEntidad()" [disabled]="!nuevoNombre.trim()">
+          Guardar
+        </button>
+        <button class="btn btn-secondary" (click)="cerrarModal()">
+          Cancelar
+        </button>
       </div>
     </div>
   </div>

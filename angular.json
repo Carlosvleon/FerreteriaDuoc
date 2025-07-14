@@ -64,6 +64,13 @@
               "buildTarget": "frontend-ferreteria:build:development"
             }
           },
+          "options": {
+              "host": "0.0.0.0",
+              "port": 4200,
+              "allowedHosts": [
+                "hold-pour.gl.at.ply.gg"
+              ]
+            },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {

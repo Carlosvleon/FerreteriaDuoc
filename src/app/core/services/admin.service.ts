@@ -70,33 +70,56 @@ export class AdminService {
     });
   }
 
-crearMarca(nombre: string) {
-  return this.http.post(`${this.apiUrl}/marcas`, { nombre });
-}
+  crearMarca(nombre: string) {
+    return this.http.post(`${this.apiUrl}/marcas`, { nombre });
+  }
 
-crearModelo(nombre: string) {
-  return this.http.post(`${this.apiUrl}/modelos`, { nombre });
-}
+  crearModelo(nombre: string) {
+    return this.http.post(`${this.apiUrl}/modelos`, { nombre });
+  }
 
-crearCategoria(nombre: string) {
-  return this.http.post(`${this.apiUrl}/categorias`, { nombre });
-}
+  crearCategoria(nombre: string) {
+    return this.http.post(`${this.apiUrl}/categorias`, { nombre });
+  }
 
   listarMarcas(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/marcas`);
-}
+    return this.http.get<any[]>(`${this.apiUrl}/marcas`);
+  }
 
-listarModelos(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/modelos`);
-}
+  listarModelos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/modelos`);
+  }
 
-listarCategorias(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/categorias`);
-}
+  listarCategorias(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/categorias`);
+  }
 
   actualizarProducto(id: number, producto: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/productos/${id}`, producto, {
       headers: this.getAuthHeaders(),
     });
   }
+  subirImagenProducto(idProducto: number, formData: FormData): Observable<any> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    return this.http.post(
+      `${this.apiUrl}/productos/${idProducto}/imagen`,
+      formData,
+      { headers }
+    );
+  }
+
+fixProductoSinStock(idProducto: number): Observable<any> {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders({
+    Authorization: `Bearer ${token}`,
+  });
+
+  return this.http.post(`${this.apiUrl}/productos/${idProducto}/fix`, {}, { headers });
+}
+
+
 }

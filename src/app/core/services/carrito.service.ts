@@ -21,7 +21,7 @@ export class CarritoService {
   }
 
   agregarProductosPorSucursal(idSucursal: number, productos: { id_producto: number, cantidad: number }[]): Observable<any> {
-    return this.http.post(`${this.apiUrl}/api/carrito/`, {
+    return this.http.post(`${this.apiUrl}/api/carrito/agregar/`, {
       id_sucursal: idSucursal,
       productos: productos
     }, {

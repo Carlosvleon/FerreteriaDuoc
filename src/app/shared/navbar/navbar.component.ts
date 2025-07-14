@@ -14,11 +14,14 @@ import { getTipoUsuarioFromToken } from '../../core/services/auth.util';
 })
 export class NavbarComponent {
   tipoUsuario: number | null = null;
-
+  loggedIn = false;
+  isAdmin = false;
   constructor(public authService: AuthService) {}
 
   ngOnInit() {
     this.tipoUsuario = getTipoUsuarioFromToken();
+    this.authService.loggedIn$.subscribe(flag => this.loggedIn = flag);
+    this.authService.isAdmin$.subscribe(flag => this.isAdmin = flag);
   }
 
   onLogout() {
