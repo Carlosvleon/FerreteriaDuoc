@@ -47,23 +47,22 @@ exports.subirImagenProducto = async (req, res) => {
   try {
     const idProducto = req.params.idProducto;
 
-    // Validar archivo
     if (!req.file) {
       return res.status(400).json({ error: 'No se envió ninguna imagen' });
     }
 
-    // Borra imágenes anteriores en la carpeta (menos la recién subida)
     const carpetaProducto = path.join(__dirname, '../../../uploads/productos/', idProducto.toString());
-    const archivos = fs.readdirSync(carpetaProducto).filter(f => f !== req.file.filename);
-    for (const file of archivos) {
-      fs.unlinkSync(path.join(carpetaProducto, file));
+    if (fs.existsSync(carpetaProducto)) {
+      const archivos = fs.readdirSync(carpetaProducto).filter(f => f !== req.file.filename);
+      for (const file of archivos) {
+        fs.unlinkSync(path.join(carpetaProducto, file));
+      }
     }
 
-    // Guarda la ruta de la nueva imagen en la BD
     const rutaImagen = `/uploads/productos/${idProducto}/${req.file.filename}`;
     await productoModel.actualizarRutaImagen(idProducto, rutaImagen);
 
-    return res.json({ mensaje: 'Imagen subida correctamente', ruta: rutaImagen });
+    return res.json({ message: 'Imagen subida y asociada correctamente', path: rutaImagen });
   } catch (error) {
     console.error('Error al subir imagen:', error);
     res.status(500).json({ error: 'Error interno al subir la imagen' });

@@ -15,7 +15,6 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: function (req, file, cb) {
-    // Le puedes poner un nombre único usando Date.now() o mantener el nombre original
     const ext = path.extname(file.originalname);
     const nombre = Date.now() + ext;
     cb(null, nombre);
