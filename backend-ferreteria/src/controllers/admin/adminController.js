@@ -2,7 +2,6 @@ const adminProductModel = require('../../models/admin/adminProductModel');
 const adminCompraModel = require('../../models/admin/adminCompraModel');
 const adminTransaccionModel = require('../../models/admin/adminTransaccionModel');
 const path = require('path');
-const fs = require('fs-extra');
 const productoModel = require('../../models/admin/adminProductModel');
 
 // ========= PRODUCTOS =========
@@ -51,16 +50,7 @@ exports.subirImagenProducto = async (req, res) => {
       return res.status(400).json({ error: 'No se envió ninguna imagen' });
     }
 
-
     const carpetaProducto = path.join(__dirname, '../../../uploads/productos/', idProducto.toString());
-    if (fs.existsSync(carpetaProducto)) {
-      const archivos = fs.readdirSync(carpetaProducto).filter(f => f !== req.file.filename);
-      for (const file of archivos) {
-        fs.unlinkSync(path.join(carpetaProducto, file));
-
-      }
-    }
-
     const rutaImagen = `/uploads/productos/${idProducto}/${req.file.filename}`;
     await productoModel.actualizarRutaImagen(idProducto, rutaImagen);
 
