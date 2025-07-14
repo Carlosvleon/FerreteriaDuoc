@@ -1,0 +1,127 @@
+const adminProductModel = require('../../models/admin/adminProductModel');
+const adminCompraModel = require('../../models/admin/adminCompraModel');
+const adminTransaccionModel = require('../../models/admin/adminTransaccionModel');
+const path = require('path');
+const fs = require('fs-extra');
+const productoModel = require('../../models/admin/adminProductModel');
+
+// ========= PRODUCTOS =========
+
+exports.crearProducto = async (req, res) => {
+  try {
+    // La validación de datos de entrada (con Joi, por ejemplo) sería ideal aquí
+    const idProducto = await adminProductModel.crearProducto(req.body);
+    res.status(201).json({ message: 'Producto creado con éxito', idProducto });
+  } catch (err) {
+    console.error('Error al crear producto:', err);
+    // Evitar filtrar el mensaje de error de la BD al cliente
+    res.status(500).json({ error: 'Error interno al crear el producto.' });
+  }
+};
+
+exports.listarProductos = async (req, res) => {
+  try {
+    // Usa la función optimizada que ya obtiene todos los detalles
+    const productos = await adminProductModel.obtenerProductosConDetalles();
+    res.json(productos);
+  } catch (err) {
+    console.error('Error al listar productos:', err);
+    res.status(500).json({ error: 'Error interno al obtener los productos.' });
+  }
+};
+
+exports.actualizarProducto = async (req, res) => {
+  console.log('REQ.BODY', req.body);
+  try {
+    const { idProducto } = req.params;
+    // El modelo ahora maneja la transacción de manera atómica
+    await adminProductModel.actualizarProducto(idProducto, req.body);
+    res.json({ message: 'Producto actualizado correctamente' });
+  } catch (err) {
+    console.error(`Error al actualizar producto ${req.params.idProducto}:`, err);
+    res.status(500).json({ error: 'Error interno al actualizar el producto.' });
+  }
+};
+
+exports.subirImagenProducto = async (req, res) => {
+  try {
+    const idProducto = req.params.idProducto;
+
+    // Validar archivo
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se envió ninguna imagen' });
+    }
+
+    // Borra imágenes anteriores en la carpeta (menos la recién subida)
+    const carpetaProducto = path.join(__dirname, '../../../uploads/productos/', idProducto.toString());
+    const archivos = fs.readdirSync(carpetaProducto).filter(f => f !== req.file.filename);
+    for (const file of archivos) {
+      fs.unlinkSync(path.join(carpetaProducto, file));
+    }
+
+    // Guarda la ruta de la nueva imagen en la BD
+    const rutaImagen = `/uploads/productos/${idProducto}/${req.file.filename}`;
+    await productoModel.actualizarRutaImagen(idProducto, rutaImagen);
+
+    return res.json({ mensaje: 'Imagen subida correctamente', ruta: rutaImagen });
+  } catch (error) {
+    console.error('Error al subir imagen:', error);
+    res.status(500).json({ error: 'Error interno al subir la imagen' });
+  }
+};
+
+
+// ========= COMPRAS =========
+
+exports.listarCompras = async (req, res) => {
+  try {
+    // Refactorizado para usar la función correcta y unificada del modelo
+    const data = await adminCompraModel.listarComprasConFiltros(req.query);
+    res.json(data);
+  } catch (err) {
+    console.error('Error al listar compras:', err);
+    res.status(500).json({ error: 'Error interno al obtener las compras.' });
+  }
+};
+
+exports.verDetalleCompra = async (req, res) => {
+  try {
+    const { idCompra } = req.params;
+    const detalle = await adminCompraModel.obtenerDetalleCompra(idCompra);
+    if (!detalle || !detalle.compra) {
+      return res.status(404).json({ error: 'Compra no encontrada' });
+    }
+    res.json(detalle);
+  } catch (err) {
+    console.error(`Error al obtener detalle de compra ${req.params.idCompra}:`, err);
+    res.status(500).json({ error: 'Error interno al obtener el detalle de la compra.' });
+  }
+};
+
+// ========= TRANSACCIONES =========
+
+exports.listarTransacciones = async (req, res) => {
+  try {
+    const data = await adminTransaccionModel.listarTransaccionesConFiltros(req.query);
+    res.json(data);
+  } catch (err) {
+    console.error('Error al listar transacciones:', err);
+    res.status(500).json({ error: 'Error interno al obtener las transacciones.' });
+  }
+};
+
+// ========= CATÁLOGOS (Marcas, Modelos, Categorías) =========
+
+const listarCatalogo = (modelFunction) => async (req, res) => {
+  try {
+    const items = await modelFunction();
+    res.json(items);
+  } catch (err) {
+    console.error(`Error al listar catálogo:`, err);
+    res.status(500).json({ error: 'Error interno al obtener el listado.' });
+  }
+};
+
+exports.listarMarcas = listarCatalogo(adminProductModel.listarMarcas);
+exports.listarModelos = listarCatalogo(adminProductModel.listarModelos);
+exports.listarCategorias = listarCatalogo(adminProductModel.listarCategorias);
