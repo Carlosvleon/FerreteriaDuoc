@@ -180,3 +180,4 @@ exports.agregarProductosPorSucursal = async (usuarioId, id_sucursal, productos) 
   }
 };
 
+exports.agregar = exports.agregarProductosPorSucursal;

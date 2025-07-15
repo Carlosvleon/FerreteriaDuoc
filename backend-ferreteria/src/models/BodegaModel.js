@@ -1,6 +1,6 @@
 const pool = require('../db');
 
-exports.obtenerProductos = async (id_bodega, id_sucursal, email) => {
+exports.obtenerProductos = async ({ id_bodega, id_sucursal }) => {
   const result = await pool.query(
     `SELECT 
        p.codigo_producto AS "Código del producto",
@@ -22,6 +22,5 @@ exports.obtenerProductos = async (id_bodega, id_sucursal, email) => {
     [id_bodega, id_sucursal]
   );
 
-  console.log(`Consulta POST de bodega ${id_bodega} en sucursal ${id_sucursal} por ${email}`);
   return result.rows;
 };

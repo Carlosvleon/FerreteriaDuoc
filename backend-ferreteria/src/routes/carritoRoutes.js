@@ -21,6 +21,7 @@ if (isTest) {
 } else {
   const authMiddleware = require('../middleware/authMiddleware');
   router.post('/agregar', authMiddleware, carritoController.agregarAlCarrito);
+  // La siguiente línea está causando el error. Coméntala temporalmente para poder iniciar el proyecto.
   router.get('/', authMiddleware, carritoController.obtenerCarrito);
 }
 

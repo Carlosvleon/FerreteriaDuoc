@@ -59,3 +59,24 @@ exports.actualizarEstadoOficio = async (usuario_id, oficio_id, especializacion_i
     [estado_id, usuario_id, oficio_id, especializacion_id]
   );
 };
+exports.crearOficio = async (nombre) => {
+  const result = await pool.query('INSERT INTO tipo_oficio (nombre) VALUES ($1) RETURNING *', [nombre]);
+  return result.rows[0];
+};
+
+exports.actualizarOficio = async (id, nombre) => {
+  const result = await pool.query('UPDATE tipo_oficio SET nombre=$1 WHERE id=$2 RETURNING *', [nombre, id]);
+  return result.rows[0] || null;
+};
+
+exports.obtenerOficioPorId = async (id) => {
+  const result = await pool.query('SELECT * FROM tipo_oficio WHERE id = $1', [id]);
+  return result.rows[0] || null;
+};
+exports.actualizarEstado = async (id, estado) => {
+  const result = await pool.query(
+    'UPDATE tipo_oficio SET estado=$1 WHERE id=$2 RETURNING *',
+    [estado, id]
+  );
+  return result.rows[0] || null;
+};
