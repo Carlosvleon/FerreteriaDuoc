@@ -2,6 +2,7 @@ const adminProductModel = require('../../models/admin/adminProductModel');
 const adminCompraModel = require('../../models/admin/adminCompraModel');
 const adminTransaccionModel = require('../../models/admin/adminTransaccionModel');
 const path = require('path');
+const fs = require('fs-extra');
 const productoModel = require('../../models/admin/adminProductModel');
 
 // ========= PRODUCTOS =========
