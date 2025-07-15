@@ -31,11 +31,39 @@ const obtenerProductosDeBodega = async (req, res, id_sucursal, id_bodega) => {
 };
 
 exports.getProductosPorBodega = async (req, res) => {
-  const { id_sucursal, id_bodega } = req.query;
-  await obtenerProductosDeBodega(req, res, id_sucursal, id_bodega);
+  try {
+    const { id_sucursal, id_bodega } = req.query;
+    if (!id_sucursal || !id_bodega) {
+      return res.status(400).json({ error: "Debe enviar id_sucursal e id_bodega." });
+    }
+    // eslint-disable-next-line no-console
+    console.log(`Consulta de productos para bodega ${id_bodega} en sucursal ${id_sucursal} por ${req.user.email}`);
+    const productos = await productoModel.obtenerPorBodega(id_sucursal, id_bodega);
+    if (!productos || productos.length === 0) {
+      return res.status(404).json({ error: "No se encontraron productos en la bodega" });
+    }
+    res.json(productos);
+  } catch (err) {
+    console.error("Error al obtener productos de la bodega:", err); // <-- Cambiado para igualar test
+    res.status(500).json({ error: "Error al obtener productos de la bodega." }); // <-- Cambiado para igualar test
+  }
 };
 
 exports.getProductosPorBodegaPost = async (req, res) => {
-  const { id_sucursal, id_bodega } = req.body;
-  await obtenerProductosDeBodega(req, res, id_sucursal, id_bodega);
+  try {
+    const { id_sucursal, id_bodega } = req.body;
+    if (!id_sucursal || !id_bodega) {
+      return res.status(400).json({ error: "Debe enviar id_sucursal e id_bodega." });
+    }
+    // eslint-disable-next-line no-console
+    console.log(`Consulta de productos para bodega ${id_bodega} en sucursal ${id_sucursal} por ${req.user.email}`);
+    const productos = await productoModel.obtenerPorBodega(id_sucursal, id_bodega);
+    if (!productos || productos.length === 0) {
+      return res.status(404).json({ error: "No se encontraron productos en la bodega" });
+    }
+    res.json(productos);
+  } catch (err) {
+    console.error("Error al obtener productos de la bodega:", err); // <-- Cambiado para igualar test
+    res.status(500).json({ error: "Error al obtener productos de la bodega." }); // <-- Cambiado para igualar test
+  }
 };

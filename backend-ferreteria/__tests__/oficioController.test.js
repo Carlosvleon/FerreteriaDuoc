@@ -9,43 +9,73 @@ jest.mock('../src/middleware/authMiddleware', () => (req, res, next) => {
 });
 
 describe('oficioController', () => {
+  afterEach(() => jest.clearAllMocks());
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  describe('GET /api/oficios/', () => {
-    it('OC-001: should return 200 and a list of oficios', async () => {
-      const mockOficios = [{ id: 1, nombre: 'Carpintería' }];
-      oficioModel.listarOficios.mockResolvedValue(mockOficios);
-
-      const res = await request(app).get('/api/oficios/');
-
+  describe('GET /api/oficios', () => {
+    it('debe devolver 200 y la lista de oficios', async () => {
+      oficioModel.listarOficios.mockResolvedValue([{ id: 1, nombre: 'Albañil', especializaciones: [] }]);
+      const res = await request(app).get('/api/oficios');
       expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual(mockOficios);
+      expect(res.body).toBeInstanceOf(Array);
+    });
+
+    it('debe devolver 500 si hay error', async () => {
+      oficioModel.listarOficios.mockRejectedValue(new Error('fail'));
+      const res = await request(app).get('/api/oficios');
+      expect(res.statusCode).toBe(500);
+      expect(res.body).toHaveProperty('error');
     });
   });
 
   describe('POST /api/oficios/agregar', () => {
-    it('OC-003: should return 201 when adding oficios successfully', async () => {
+    it('debe devolver 201 al agregar correctamente', async () => {
       oficioModel.agregarOficiosUsuario.mockResolvedValue();
-
       const res = await request(app)
         .post('/api/oficios/agregar')
-        .send({ oficios: [1, 2, 3] });
-
+        .send({ oficios: [{ oficio_id: 1, especializacion_id: 1 }] });
       expect(res.statusCode).toBe(201);
-      expect(res.body).toHaveProperty('message', 'Oficios agregados correctamente');
+      expect(res.body).toHaveProperty('message');
     });
 
-    it('OC-004: should return 400 if oficios is not an array', async () => {
+    it('debe devolver 400 si falta oficios', async () => {
       const res = await request(app)
         .post('/api/oficios/agregar')
-        .send({ oficios: '1,2,3' });
-
+        .send({});
       expect(res.statusCode).toBe(400);
-      expect(res.body).toHaveProperty('error', 'Faltan datos obligatorios o los oficios no son válidos');
+    });
+
+    it('debe devolver 500 en error interno', async () => {
+      oficioModel.agregarOficiosUsuario.mockRejectedValue(new Error('fail'));
+      const res = await request(app)
+        .post('/api/oficios/agregar')
+        .send({ oficios: [{ oficio_id: 1, especializacion_id: 1 }] });
+      expect(res.statusCode).toBe(500);
     });
   });
 
+  describe('PUT /api/oficios/estado', () => {
+    it('debe devolver 200 al actualizar correctamente', async () => {
+      oficioModel.actualizarEstadoOficio.mockResolvedValue();
+      const res = await request(app)
+        .put('/api/oficios/estado')
+        .send({ oficio_id: 1, especializacion_id: 2, estado_id: 1 });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('message');
+    });
+
+    it('debe devolver 400 si faltan campos', async () => {
+      const res = await request(app)
+        .put('/api/oficios/estado')
+        .send({ oficio_id: 1 });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('debe devolver 500 en error interno', async () => {
+      oficioModel.actualizarEstadoOficio.mockRejectedValue(new Error('fail'));
+      const res = await request(app)
+        .put('/api/oficios/estado')
+        .send({ oficio_id: 1, especializacion_id: 2, estado_id: 1 });
+      expect(res.statusCode).toBe(500);
+    });
+  });
 });

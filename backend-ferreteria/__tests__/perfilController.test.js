@@ -160,5 +160,21 @@ describe('perfilController', () => {
       // <-- CORRECCIÓN: El mensaje debe ser idéntico al del controlador
       expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: "Error al actualizar la imagen de portada" }));
     });
+    it('devuelve 400 si no se sube archivo (foto)', async () => {
+      req.body.rut = '12345678-9';
+      req.file = undefined;
+      await perfilController.actualizarFotoPerfil(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: "No se ha subido ningún archivo." });
+    });
+
+    it('devuelve 400 si no se sube archivo (portada)', async () => {
+      req.body.rut = '12345678-9';
+      req.file = undefined;
+      await perfilController.actualizarPortada(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ error: "No se ha subido ningún archivo." });
+    });
+
   });
 });

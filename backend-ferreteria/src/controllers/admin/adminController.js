@@ -9,15 +9,37 @@ const productoModel = require('../../models/admin/adminProductModel');
 
 exports.crearProducto = async (req, res) => {
   try {
-    // La validación de datos de entrada (con Joi, por ejemplo) sería ideal aquí
-    const idProducto = await adminProductModel.crearProducto(req.body);
-    res.status(201).json({ message: 'Producto creado con éxito', idProducto });
+    const { nombre, precioOnline } = req.body;
+
+    // Validación de campos obligatorios
+    if (!nombre || precioOnline === undefined || precioOnline === null) {
+      return res.status(400).json({ error: 'Faltan campos requeridos (nombre, precioOnline)' });
+    }
+    // Validación de tipo de dato
+    if (typeof precioOnline !== 'number' || precioOnline < 0) {
+      return res.status(400).json({ error: 'El campo precioOnline debe ser un número válido mayor o igual a 0.' });
+    }
+
+    try {
+      const idProducto = await adminProductModel.crearProducto(req.body);
+      return res.status(201).json({ message: 'Producto creado con éxito', idProducto });
+    } catch (err) {
+      // Controla el error de clave duplicada (PostgreSQL: 23505)
+      if (err.code === '23505') {
+        return res.status(409).json({ error: 'El producto ya existe' });
+      }
+      // Otros errores de validación del modelo
+      if (err.message && err.message.includes('violates')) {
+        return res.status(409).json({ error: 'Producto duplicado' });
+      }
+      throw err; // Error inesperado, se maneja abajo
+    }
   } catch (err) {
     console.error('Error al crear producto:', err);
-    // Evitar filtrar el mensaje de error de la BD al cliente
     res.status(500).json({ error: 'Error interno al crear el producto.' });
   }
 };
+
 
 exports.listarProductos = async (req, res) => {
   try {
