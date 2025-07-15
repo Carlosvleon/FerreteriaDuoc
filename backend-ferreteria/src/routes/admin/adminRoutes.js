@@ -47,6 +47,11 @@ router.get('/marcas', adminController.listarMarcas);
 router.get('/modelos', adminController.listarModelos);
 router.get('/categorias', adminController.listarCategorias);
 
+router.post('/marcas', adminController.crearMarca);
+router.post('/modelos', adminController.crearModelo);
+router.post('/categorias', adminController.crearCategoria);
+
+
 // --- Rutas de Compras ---
 router.get('/compras', adminController.listarCompras);
 router.get('/compras/:idCompra', adminController.verDetalleCompra);

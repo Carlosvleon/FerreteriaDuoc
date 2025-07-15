@@ -50,11 +50,10 @@ exports.subirImagenProducto = async (req, res) => {
       return res.status(400).json({ error: 'No se envió ninguna imagen' });
     }
 
-    const carpetaProducto = path.join(__dirname, '../../../uploads/productos/', idProducto.toString());
     const rutaImagen = `/uploads/productos/${idProducto}/${req.file.filename}`;
     await productoModel.actualizarRutaImagen(idProducto, rutaImagen);
 
-    return res.json({ message: 'Imagen subida y asociada correctamente', path: nuevaRutaImagenDB });
+    return res.json({ message: 'Imagen subida y asociada correctamente', path: rutaImagen });
   } catch (error) {
     console.error('Error al subir imagen:', error);
     // Si algo falla, eliminamos el archivo que se acaba de subir para no dejar basura.
@@ -121,3 +120,43 @@ const listarCatalogo = (modelFunction) => async (req, res) => {
 exports.listarMarcas = listarCatalogo(adminProductModel.listarMarcas);
 exports.listarModelos = listarCatalogo(adminProductModel.listarModelos);
 exports.listarCategorias = listarCatalogo(adminProductModel.listarCategorias);
+
+exports.crearMarca = async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    if (!nombre) {
+      return res.status(400).json({ error: 'Nombre de la marca es requerido' });
+    }
+    const idMarca = await adminProductModel.crearMarca(nombre);
+    res.status(201).json({ message: 'Marca creada con éxito', idMarca });
+  } catch (err) {
+    console.error('Error al crear marca:', err);
+    res.status(500).json({ error: 'Error interno al crear la marca.' });
+  }
+}
+exports.crearModelo = async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    if (!nombre) {
+      return res.status(400).json({ error: 'Nombre del modelo es requerido' });
+    }
+    const idModelo = await adminProductModel.crearModelo(nombre);
+    res.status(201).json({ message: 'Modelo creado con éxito', idModelo });
+  } catch (err) {
+    console.error('Error al crear modelo:', err);
+    res.status(500).json({ error: 'Error interno al crear el modelo.' });
+  }
+}
+exports.crearCategoria = async (req, res) => {
+  try {
+    const { nombre } = req.body;
+    if (!nombre) {
+      return res.status(400).json({ error: 'Nombre de la categoría es requerido' });
+    }
+    const idCategoria = await adminProductModel.crearCategoria(nombre);
+    res.status(201).json({ message: 'Categoría creada con éxito', idCategoria });
+  } catch (err) {
+    console.error('Error al crear categoría:', err);
+    res.status(500).json({ error: 'Error interno al crear la categoría.' });
+  }
+}
