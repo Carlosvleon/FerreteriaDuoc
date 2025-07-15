@@ -1,96 +1,164 @@
-const request = require('supertest');
-const app = require('../src/app');
+// perfilController.test.js
+const perfilController = require('../src/controllers/perfilController');
 const perfilModel = require('../src/models/PerfilModel');
 
+// Mockea el modelo entero
 jest.mock('../src/models/PerfilModel');
 
-// Mock authMiddleware para simular un usuario autenticado
-jest.mock('../src/middleware/authMiddleware', () => (req, res, next) => {
-  req.user = { id_usuario: 'mock-user-id', rut: '11222333-4' };
-  next();
-});
-
-let consoleErrorSpy;
 
 describe('perfilController', () => {
+  let req, res;
 
   beforeEach(() => {
-    // Silenciar console.error para una salida de test más limpia
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-  });
-  afterEach(() => {
+    req = {
+      user: { id_usuario: 1, rut: "12345678-9" },
+      params: {},
+      query: {},
+      body: {},
+      file: undefined,
+    };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
     jest.clearAllMocks();
-    consoleErrorSpy.mockRestore();
   });
 
-  describe('GET /api/perfiles/mi-perfil', () => {
-    it('PC-001: should return 200 and the profile of the authenticated user', async () => {
-      const mockProfile = { id_usuario: 'mock-user-id', nombre: 'Test User' };
-      perfilModel.obtenerPerfilPorId.mockResolvedValue(mockProfile);
+  describe('getPerfilUsuario', () => {
+    it('devuelve el perfil si existe', async () => {
+      const perfil = { id_usuario: 1, nombre: "Carlos" };
+      perfilModel.obtenerPerfilPorId.mockResolvedValue(perfil);
 
-      const res = await request(app).get('/api/perfiles/mi-perfil');
-
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual(mockProfile);
-      expect(perfilModel.obtenerPerfilPorId).toHaveBeenCalledWith('mock-user-id');
+      await perfilController.getPerfilUsuario(req, res);
+      expect(perfilModel.obtenerPerfilPorId).toHaveBeenCalledWith(1);
+      expect(res.json).toHaveBeenCalledWith(perfil);
     });
 
-    it('PC-002: should return 404 if the user profile is not found', async () => {
+    it('devuelve 404 si no existe el perfil', async () => {
       perfilModel.obtenerPerfilPorId.mockResolvedValue(null);
 
-      const res = await request(app).get('/api/perfiles/mi-perfil');
+      await perfilController.getPerfilUsuario(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: "Usuario no encontrado." });
+    });
 
-      expect(res.statusCode).toBe(404);
-      expect(res.body).toHaveProperty('error', 'Usuario no encontrado.');
+    it('devuelve 500 en caso de error', async () => {
+      perfilModel.obtenerPerfilPorId.mockRejectedValue(new Error('DB Error'));
+
+      await perfilController.getPerfilUsuario(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "Error al obtener perfil" });
     });
   });
 
-  describe('GET /api/perfiles/listar', () => {
-    it('PC-005: should return 200 and a list of all users when no filter is applied', async () => {
-      const mockUsers = [{ id_usuario: '1', nombre: 'User One' }];
-      perfilModel.obtenerUsuarios.mockResolvedValue(mockUsers);
+  describe('getTodosLosUsuarios', () => {
+    it('devuelve la lista de usuarios', async () => {
+      const usuarios = [{ id_usuario: 1 }, { id_usuario: 2 }];
+      perfilModel.obtenerUsuarios.mockResolvedValue(usuarios);
 
-      const res = await request(app).get('/api/perfiles/listar');
+      req.query.tipo_usuario = 2;
+      await perfilController.getTodosLosUsuarios(req, res);
+      expect(perfilModel.obtenerUsuarios).toHaveBeenCalledWith(2);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(usuarios);
+    });
 
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual(mockUsers);
-      expect(perfilModel.obtenerUsuarios).toHaveBeenCalledWith(undefined);
+    it('devuelve 500 si falla', async () => {
+      perfilModel.obtenerUsuarios.mockRejectedValue(new Error('fail'));
+      await perfilController.getTodosLosUsuarios(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "Error al obtener usuarios" });
     });
   });
 
-  describe('POST /api/perfiles/foto', () => {
-    it('PC-010: should return 400 when updating profile picture successfully, but missing rut', async () => {
-      perfilModel.actualizarImagen.mockResolvedValue({ message: 'Perfil actualizada con éxito' });
+  describe('getPerfilPorId', () => {
+    it('devuelve el perfil si existe', async () => {
+      req.params.id = 5;
+      const perfil = { id_usuario: 5 };
+      perfilModel.obtenerPerfilPorId.mockResolvedValue(perfil);
 
-      const res = await request(app)
-        .post('/api/perfiles/foto')
-        .attach('file', Buffer.from('fake image'), 'avatar.jpg');
-
-      expect(res.statusCode).toBe(400);
-      expect(res.body).toHaveProperty('error', "Falta el campo 'rut' en la solicitud.");
+      await perfilController.getPerfilPorId(req, res);
+      expect(perfilModel.obtenerPerfilPorId).toHaveBeenCalledWith(5);
+      expect(res.json).toHaveBeenCalledWith(perfil);
     });
 
-    it('PC-012: should return 400 if RUT in body does not match user token RUT', async () => {
-      const res = await request(app)
-        .post('/api/perfiles/foto')
-        .field('rut', '99888777-6') // RUT diferente
-        .attach('file', Buffer.from('fake image'), 'avatar.jpg');
+    it('devuelve 404 si no existe', async () => {
+      req.params.id = 5;
+      perfilModel.obtenerPerfilPorId.mockResolvedValue(null);
 
-      expect(res.statusCode).toBe(400); // Corrected: The expected status code is 400
-      expect(res.body).toHaveProperty('error', 'No autorizado');
+      await perfilController.getPerfilPorId(req, res);
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ error: "Usuario no encontrado" });
+    });
+
+    it('devuelve 500 si hay error', async () => {
+      req.params.id = 5;
+      perfilModel.obtenerPerfilPorId.mockRejectedValue(new Error('fail'));
+      await perfilController.getPerfilPorId(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ error: "Error en el servidor" });
     });
   });
 
-  describe('GET /api/perfiles/:id', () => {
-    it('PC-007: should return 200 and the profile of the specified user', async () => {
-      const mockProfile = { id_usuario: 'some-other-id', nombre: 'Other User' };
-      perfilModel.obtenerPerfilPorId.mockResolvedValue(mockProfile);
+  describe('actualizarFotoPerfil', () => {
+    it('devuelve 403 si rut no coincide', async () => {
+      req.body.rut = 'otro-rut';
+      req.file = { filename: "test.jpg" }; // <-- CORRECCIÓN: Añadir archivo para pasar la primera validación
+      await perfilController.actualizarFotoPerfil(req, res);
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json).toHaveBeenCalledWith({ error: "No autorizado" });
+    });
 
-      const res = await request(app).get('/api/perfiles/some-other-id');
+    it('actualiza foto correctamente', async () => {
+      req.body.rut = '12345678-9';
+      req.file = { filename: "test.jpg" };
+      perfilModel.actualizarImagen.mockResolvedValue({ ok: true });
 
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toEqual(mockProfile);
-      expect(perfilModel.obtenerPerfilPorId).toHaveBeenCalledWith('some-other-id');
+      await perfilController.actualizarFotoPerfil(req, res);
+      expect(perfilModel.actualizarImagen).toHaveBeenCalledWith('12345678-9', req.file, "perfil");
+      expect(res.json).toHaveBeenCalledWith({ ok: true });
+    });
+
+    it('devuelve 500 en error', async () => {
+      req.body.rut = '12345678-9';
+      req.file = { filename: "test.jpg" };
+      perfilModel.actualizarImagen.mockRejectedValue(new Error('fail'));
+
+      await perfilController.actualizarFotoPerfil(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      // <-- CORRECCIÓN: El mensaje debe ser idéntico al del controlador
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: "Error al actualizar la imagen de perfil" }));
+    });
+  });
+
+  describe('actualizarPortada', () => {
+    it('devuelve 403 si rut no coincide', async () => {
+      req.body.rut = 'otro-rut';
+      req.file = { filename: "portada.jpg" }; // <-- CORRECCIÓN: Añadir archivo para pasar la primera validación
+      await perfilController.actualizarPortada(req, res);
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json).toHaveBeenCalledWith({ error: "No autorizado" });
+    });
+
+    it('actualiza portada correctamente', async () => {
+      req.body.rut = '12345678-9';
+      req.file = { filename: "portada.jpg" };
+      perfilModel.actualizarImagen.mockResolvedValue({ ok: true });
+
+      await perfilController.actualizarPortada(req, res);
+      expect(perfilModel.actualizarImagen).toHaveBeenCalledWith('12345678-9', req.file, "portada");
+      expect(res.json).toHaveBeenCalledWith({ ok: true });
+    });
+
+    it('devuelve 500 en error', async () => {
+      req.body.rut = '12345678-9';
+      req.file = { filename: "portada.jpg" };
+      perfilModel.actualizarImagen.mockRejectedValue(new Error('fail'));
+
+      await perfilController.actualizarPortada(req, res);
+      expect(res.status).toHaveBeenCalledWith(500);
+      // <-- CORRECCIÓN: El mensaje debe ser idéntico al del controlador
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: "Error al actualizar la imagen de portada" }));
     });
   });
 });
