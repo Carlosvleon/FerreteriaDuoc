@@ -71,15 +71,21 @@ export class AdminService {
   }
 
   crearMarca(nombre: string) {
-    return this.http.post(`${this.apiUrl}/marcas`, { nombre });
+    return this.http.post(`${this.apiUrl}/marcas`, { nombre }, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   crearModelo(nombre: string) {
-    return this.http.post(`${this.apiUrl}/modelos`, { nombre });
+    return this.http.post(`${this.apiUrl}/modelos`, { nombre }, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   crearCategoria(nombre: string) {
-    return this.http.post(`${this.apiUrl}/categorias`, { nombre });
+    return this.http.post(`${this.apiUrl}/categorias`, { nombre }, {
+      headers: this.getAuthHeaders(),
+    });
   }
 
   listarMarcas(): Observable<any[]> {
