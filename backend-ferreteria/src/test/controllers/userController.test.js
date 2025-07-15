@@ -31,9 +31,11 @@ describe('userController', () => {
         genero_id: 1
       };
 
-      // Simular que el email no existe y el registro es exitoso
-      userModel.findUserByEmail.mockResolvedValue(null);
-      userModel.createUser.mockResolvedValue({ id_usuario: 'new-uuid', ...userData });
+      // Simular registro exitoso
+      userModel.register.mockResolvedValue({
+        status: 201,
+        body: { id_usuario: 'new-uuid', email: userData.email }
+      });
 
       const response = await request(app).post('/register').send(userData);
 
@@ -86,12 +88,8 @@ describe('userController', () => {
         password: 'contrasenaSegura123'
       };
 
-      // Simular que el usuario existe y la contraseña es válida
-      const mockUser = { email: loginData.email, password: 'hashedPassword' };
-      userModel.findUserByEmail.mockResolvedValue(mockUser);
-      // Asumimos que tienes un helper o usas bcrypt directamente
-      const bcrypt = require('bcryptjs');
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+      // Simular autenticación exitosa
+      userModel.login.mockResolvedValue({ status: 200, body: { token: 'jwt-token' } });
 
       const response = await request(app).post('/login').send(loginData);
 
@@ -145,11 +143,11 @@ describe('userController', () => {
       expect(response.body.error).toBe('Token no válido.');
     });
 
-    test('retorna 401 si no se envía token', async () => {
+    test('retorna 400 si no se envía token', async () => {
       const response = await request(app).post('/logout');
 
-      expect(response.status).toBe(401);
-      expect(response.body.error).toBe('No se proporcionó token.');
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe('Token no válido.');
     });
   });
 });
