@@ -1,3 +1,6 @@
+
+console.log("=== INICIANDO SERVER.JS DESDE EL CONTENEDOR ===");
+
 const express = require('express');
 const path = require('path');
 const app = express();
