@@ -63,7 +63,7 @@ export class AdminService {
       headers: this.getAuthHeaders(),
     });
   }
-  // ✅ Listar productos estructurados
+  //  Listar productos estructurados
   listarProductos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/productos`, {
       headers: this.getAuthHeaders(),

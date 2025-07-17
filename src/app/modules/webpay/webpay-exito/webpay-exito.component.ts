@@ -27,7 +27,7 @@ export class WebpayExitoComponent implements OnInit {
     const token = this.route.snapshot.queryParamMap.get('token_ws');
 
     if (!token) {
-      this.mensaje = '❌ No se recibió token de transacción desde Webpay.';
+      this.mensaje = ' No se recibió token de transacción desde Webpay.';
       this.exito = false;
       return;
     }
@@ -35,10 +35,10 @@ export class WebpayExitoComponent implements OnInit {
     this.compraService.confirmarPagoWebpay(token).subscribe({
       next: (res) => {
         if (res.estado === 'FAILED' || !res.datos?.id_compra) {
-          this.mensaje = '❌ ' + (res.mensaje || 'La transacción no fue autorizada. Verifica los datos e inténtalo de nuevo.');
+          this.mensaje = ' ' + (res.mensaje || 'La transacción no fue autorizada. Verifica los datos e inténtalo de nuevo.');
           this.exito = false;
         } else {
-          this.mensaje = '✅ ¡Compra realizada con éxito!';
+          this.mensaje = ' ¡Compra realizada con éxito!';
           this.exito = true;
           this.resultado = res;
           
@@ -50,7 +50,7 @@ export class WebpayExitoComponent implements OnInit {
         }
       },
       error: (err) => {
-        this.mensaje = '❌ ' + (err.message || 'Hubo un problema al procesar tu compra. Por favor, intenta nuevamente.');
+        this.mensaje = ' ' + (err.message || 'Hubo un problema al procesar tu compra. Por favor, intenta nuevamente.');
         this.exito = false;
         console.error('Error al confirmar la compra:', err);
       }
