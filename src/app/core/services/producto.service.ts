@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +13,17 @@ export class ProductoService {
 
   constructor(private http: HttpClient) { }
 
-  getProductos(): Observable<any> {
-    const token = localStorage.getItem('token');
-    console.log('Token usado:', token);
-    const headers = { Authorization: `Bearer ${token}` };
-    return this.http.get(`${this.apiUrl}/api/productos/`, { headers });
+getProductos(): Observable<any> {
+  const token = localStorage.getItem('token');
+  let headers = new HttpHeaders();
+
+  if (token) {
+    headers = headers.set('Authorization', `Bearer ${token}`);
   }
+
+  return this.http.get(`${this.apiUrl}/api/productos/`, { headers });
+}
+
 
   getProductosPorBodega(id_bodega: number, id_sucursal: number): Observable<any> {
     const token = localStorage.getItem('token');
