@@ -15,6 +15,7 @@ export class ConfirmarCompraModalComponent {
   @Output() cerrado = new EventEmitter<void>();
   comprando = false;
   mensaje = '';
+  error = false;
 
   constructor(private compraService: CompraService, private router: Router) {}
 
@@ -23,7 +24,17 @@ export class ConfirmarCompraModalComponent {
   }
 
   confirmar() {
+    // Validar carrito antes de iniciar la compra
+    if (!this.carrito?.productos?.length || this.totalCarrito <= 0) {
+      this.mensaje = 'El carrito está vacío o el total es inválido';
+      this.error = true;
+      return;
+    }
+
     this.comprando = true;
+    this.mensaje = 'Iniciando proceso de pago...';
+    this.error = false;
+
     this.compraService.iniciarPagoWebpay().subscribe({
       next: ({ token, url }) => {
         const form = document.createElement('form');
@@ -38,24 +49,24 @@ export class ConfirmarCompraModalComponent {
         form.submit();
       },
       error: (err) => {
-        this.mensaje = err.error?.error || 'Error al iniciar Webpay';
+        this.mensaje = err.message || 'Hubo un problema al procesar tu compra. Por favor, intenta nuevamente.';
+        this.error = true;
         this.comprando = false;
         console.error('Error al iniciar Webpay:', err);
       }
     });
   }
 
-
   get totalCarrito(): number {
     if (!this.carrito?.productos) return 0;
     return this.carrito.productos.reduce((sum: number, p: any) => sum + (p.total || 0), 0);
   }
 
-public parseNumber(value: any): number {
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') {
-    return Number(value.replace(/[^\d.-]+/g, '')); // limpia comas, espacios, $
+  public parseNumber(value: any): number {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string') {
+      return Number(value.replace(/[^\d.-]+/g, '')); // limpia comas, espacios, $
+    }
+    return 0;
   }
-  return 0;
-}
 }

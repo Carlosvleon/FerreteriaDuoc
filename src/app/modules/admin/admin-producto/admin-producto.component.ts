@@ -4,6 +4,7 @@ import { CommonModule, NgForOf } from '@angular/common';
 import { AdminProductoFormComponent } from '../admin-producto-form/admin-producto-form.component';
 import { AdminProductoEditComponent } from '../admin-producto-edit/admin-producto-edit.component';
 import { FormsModule } from '@angular/forms';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-admin-producto',
@@ -26,6 +27,7 @@ export class AdminProductoComponent implements OnInit {
   mostrarModalEdicion = false;
   productoSeleccionado: any = null;
   productosOriginal: any[] = [];
+  imgUrl: string = environment.apiUrl;
 
   // Filtros dinámicos
   marcas: string[] = [];

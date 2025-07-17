@@ -53,7 +53,7 @@
     <div class="col-12 col-md-6 col-xl-4" *ngFor="let producto of productos">
       <div class="card shadow-sm h-100">
         <div class="d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-          <img *ngIf="producto.imagen; else sinImagenAdmin" [src]="'http://localhost:5000' + producto.imagen"
+          <img *ngIf="producto.imagen; else sinImagenAdmin" [src]="imgUrl+ producto.imagen"
             class="card-img-top" alt="Imagen del producto"
             style="max-height: 100%; max-width: 100%; object-fit: contain;" />
           <ng-template #sinImagenAdmin>

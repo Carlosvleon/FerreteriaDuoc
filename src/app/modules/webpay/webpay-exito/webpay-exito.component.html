@@ -1,5 +1,6 @@
 <div class="mensaje-confirmacion" [ngClass]="{ exito: exito, error: !exito }">
   <p>{{ mensaje }}</p>
+  <p *ngIf="exito" class="text-muted">Serás redirigido a tu perfil en unos segundos...</p>
 </div>
 
 <div *ngIf="exito && resultado" class="voucher">
@@ -8,10 +9,15 @@
     <p><strong>N° Orden:</strong> {{ resultado.transaccion?.buyOrder }}</p>
     <p><strong>Fecha:</strong> {{ resultado.transaccion?.fecha | date:'medium' }}</p>
     <p><strong>ID Compra:</strong> {{ resultado.datos?.id_compra }}</p>
-    <p><strong>Total:</strong> ${{ resultado.datos?.total }}</p>
+    <p><strong>Total:</strong> ${{ resultado.datos?.total | number:'1.0-0' }}</p>
+    <p><strong>Estado:</strong> {{ resultado.transaccion?.status }}</p>
+    <p *ngIf="resultado.transaccion?.card_last_digits">
+      <strong>Tarjeta:</strong> XXXX-XXXX-XXXX-{{ resultado.transaccion?.card_last_digits }}
+    </p>
   </div>
-  <div *ngIf="resultado.datos?.productos?.length">
-    <h3>Productos</h3>
+
+  <div *ngIf="resultado.datos?.productos?.length" class="productos-info mt-4">
+    <h3>Detalle de Productos</h3>
     <table class="voucher-table">
       <thead>
         <tr>
@@ -23,11 +29,22 @@
       <tbody>
         <tr *ngFor="let prod of resultado.datos.productos">
           <td>{{ prod.nombre }}</td>
-          <td>{{ prod.cantidad }}</td>
-          <td>${{ prod.total }}</td>
+          <td class="text-center">{{ prod.cantidad }}</td>
+          <td class="text-end">${{ prod.total | number:'1.0-0' }}</td>
         </tr>
       </tbody>
     </table>
   </div>
-  <button (click)="redirigirAPerfil()">Ir al perfil</button>
+
+  <div class="text-center mt-4">
+    <button class="btn btn-primary" (click)="redirigirAPerfil()">
+      Ir al perfil
+    </button>
+  </div>
+</div>
+
+<div *ngIf="!exito" class="text-center mt-4">
+  <button class="btn btn-secondary" routerLink="/carrito">
+    Volver al carrito
+  </button>
 </div>

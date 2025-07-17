@@ -61,11 +61,6 @@ La aplicación estará disponible en [http://localhost:4200](http://localhost:42
 ```bash
 ng build --configuration production
 ```
-
-### Ejecutar tests
-
-```bash
-ng test
 ```
 
 ## Notas adicionales
@@ -73,7 +68,3 @@ ng test
 - El proyecto utiliza Bootstrap 5 para estilos y componentes visuales.
 - Para personalizar variables de entorno para producción, edita `src/environments/environment.prod.ts`.
 - Si tienes problemas con dependencias, ejecuta `npm install` nuevamente.
-
----
-
-¡Listo! Ya puedes comenzar a trabajar en el frontend de Ferretería Ferramas.
