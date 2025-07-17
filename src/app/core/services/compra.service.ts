@@ -4,6 +4,20 @@ import { environment } from '../../../environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+interface Producto {
+  codigo_producto: string;
+  cantidad: number;
+  precio: number;
+  total: number;
+  nombre: string;
+}
+
+interface Carrito {
+  id_carrito_compras: number;
+  productos: Producto[];
+  total_general: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CompraService {
   private apiUrl = environment.apiUrl;
@@ -29,7 +43,7 @@ export class CompraService {
     });
   }
 
- iniciarPagoWebpay(): Observable<any> {
+  iniciarPagoWebpay(): Observable<any> {
     // Validar carrito antes de iniciar el pago
     if (!this.validarCarrito()) {
       return throwError(() => new Error('El carrito está vacío o el total es inválido'));
@@ -38,12 +52,16 @@ export class CompraService {
     const carritoData = localStorage.getItem('carrito');
     const carrito = JSON.parse(carritoData!);
 
+    // Preparar datos para el backend
+    const datosCompra = {
+      id_carrito_compras: carrito.id_carrito_compras,
+      productos: carrito.productos,
+      total: carrito.total_general
+    };
+
     return this.http.post(
       `${this.apiUrl}/webpay/realizar`,
-      {
-        productos: carrito.productos,
-        total: carrito.total_general
-      },
+      datosCompra,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -94,16 +112,47 @@ export class CompraService {
     });
   }
 
-  private validarCarrito(): boolean {
+private validarCarrito(): boolean {
     const carritoData = localStorage.getItem('carrito');
-    if (!carritoData) return false;
+    if (!carritoData) {
+      console.error('No hay datos del carrito en localStorage');
+      return false;
+    }
 
     try {
-      const carrito = JSON.parse(carritoData);
-      return carrito.productos && carrito.productos.length > 0 && carrito.total_general > 0;
-    } catch {
+      const carrito: Carrito = JSON.parse(carritoData);
+      
+      if (!carrito.id_carrito_compras) {
+        console.error('No hay ID de carrito');
+        return false;
+      }
+      
+      if (!Array.isArray(carrito.productos) || carrito.productos.length === 0) {
+        console.error('No hay productos en el carrito');
+        return false;
+      }
+      
+      if (typeof carrito.total_general !== 'number' || carrito.total_general <= 0) {
+        console.error('Total inválido:', carrito.total_general);
+        return false;
+      }
+
+      const productosValidos = carrito.productos.every((producto: Producto) => 
+        producto.codigo_producto && 
+        producto.cantidad > 0 && 
+        producto.precio > 0 && 
+        producto.total > 0
+      );
+
+      if (!productosValidos) {
+        console.error('Datos de productos inválidos');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error al parsear datos del carrito:', error);
       return false;
     }
   }
-
 }
