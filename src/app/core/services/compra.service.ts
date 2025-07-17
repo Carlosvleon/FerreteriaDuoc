@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 
 interface Producto {
   codigo_producto: string;
@@ -43,31 +43,37 @@ export class CompraService {
     });
   }
 
-  iniciarPagoWebpay(): Observable<any> {
-    // Validar carrito antes de iniciar el pago
-    if (!this.validarCarrito()) {
-      return throwError(() => new Error('El carrito está vacío o el total es inválido'));
-    }
-
-    const carritoData = localStorage.getItem('carrito');
-    const carrito = JSON.parse(carritoData!);
-
-    // Preparar datos para el backend
-    const datosCompra = {
-      id_carrito_compras: carrito.id_carrito_compras,
-      productos: carrito.productos,
-      total: carrito.total_general
-    };
-
-    return this.http.post(
-      `${this.apiUrl}/webpay/realizar`,
-      datosCompra,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
+  obtenerCarritoActual(): Observable<Carrito> {
+    return this.http.get<Carrito>(`${this.apiUrl}/api/carrito`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
       }
-    ).pipe(
+    });
+  }
+
+  iniciarPagoWebpay(): Observable<any> {
+    return this.obtenerCarritoActual().pipe(
+      switchMap(carrito => {
+        if (!this.validarCarritoDatos(carrito)) {
+          return throwError(() => new Error('El carrito está vacío o el total es inválido'));
+        }
+
+        const datosCompra = {
+          id_carrito_compras: carrito.id_carrito_compras,
+          productos: carrito.productos,
+          total: carrito.total_general
+        };
+
+        return this.http.post(
+          `${this.apiUrl}/webpay/realizar`,
+          datosCompra,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        );
+      }),
       catchError(error => {
         console.error('Error al iniciar el pago:', error);
         return throwError(() => new Error('Error interno al procesar la compra.'));
@@ -112,47 +118,39 @@ export class CompraService {
     });
   }
 
-private validarCarrito(): boolean {
-    const carritoData = localStorage.getItem('carrito');
-    if (!carritoData) {
-      console.error('No hay datos del carrito en localStorage');
+private validarCarritoDatos(carrito: Carrito): boolean {
+    if (!carrito) {
+      console.error('No hay datos del carrito');
       return false;
     }
 
-    try {
-      const carrito: Carrito = JSON.parse(carritoData);
-      
-      if (!carrito.id_carrito_compras) {
-        console.error('No hay ID de carrito');
-        return false;
-      }
-      
-      if (!Array.isArray(carrito.productos) || carrito.productos.length === 0) {
-        console.error('No hay productos en el carrito');
-        return false;
-      }
-      
-      if (typeof carrito.total_general !== 'number' || carrito.total_general <= 0) {
-        console.error('Total inválido:', carrito.total_general);
-        return false;
-      }
-
-      const productosValidos = carrito.productos.every((producto: Producto) => 
-        producto.codigo_producto && 
-        producto.cantidad > 0 && 
-        producto.precio > 0 && 
-        producto.total > 0
-      );
-
-      if (!productosValidos) {
-        console.error('Datos de productos inválidos');
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error al parsear datos del carrito:', error);
+    if (!carrito.id_carrito_compras) {
+      console.error('No hay ID de carrito');
       return false;
     }
+    
+    if (!Array.isArray(carrito.productos) || carrito.productos.length === 0) {
+      console.error('No hay productos en el carrito');
+      return false;
+    }
+    
+    if (typeof carrito.total_general !== 'number' || carrito.total_general <= 0) {
+      console.error('Total inválido:', carrito.total_general);
+      return false;
+    }
+
+    const productosValidos = carrito.productos.every((producto: Producto) => 
+      producto.codigo_producto && 
+      producto.cantidad > 0 && 
+      producto.precio > 0 && 
+      producto.total > 0
+    );
+
+    if (!productosValidos) {
+      console.error('Datos de productos inválidos');
+      return false;
+    }
+
+    return true;
   }
 }
