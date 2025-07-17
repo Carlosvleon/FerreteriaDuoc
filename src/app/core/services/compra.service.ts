@@ -64,19 +64,30 @@ export class CompraService {
           total: carrito.total_general
         };
 
+        console.log('Iniciando pago con datos:', datosCompra);
+
         return this.http.post(
-          `${this.apiUrl}/webpay/realizar`,
+          `${this.apiUrl}/api/compras/webpay/iniciar`,
           datosCompra,
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+              'Content-Type': 'application/json'
             }
           }
+        ).pipe(
+          catchError(err => {
+            console.error('Error en la petición HTTP:', err);
+            if (err.status === 404) {
+              return throwError(() => new Error('El servicio de pago no está disponible en este momento.'));
+            }
+            return throwError(() => new Error(err.error?.mensaje || 'Error interno al procesar la compra.'));
+          })
         );
       }),
       catchError(error => {
         console.error('Error al iniciar el pago:', error);
-        return throwError(() => new Error('Error interno al procesar la compra.'));
+        return throwError(() => error);
       })
     );
   }
@@ -87,7 +98,7 @@ export class CompraService {
     }
 
     return this.http.post(
-      `${this.apiUrl}/webpay/confirmar`,
+      `${this.apiUrl}/api/compras/webpay/confirmar`,
       { token_ws: tokenWs },
       {
         headers: {
