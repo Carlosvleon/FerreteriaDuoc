@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "serve -s dist/frontend-ferreteria/browser -l ${PORT}",
-    "build": "ng build --configuration production"
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
