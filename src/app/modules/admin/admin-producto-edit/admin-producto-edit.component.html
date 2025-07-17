@@ -1,67 +1,132 @@
-<h2>Editar Producto</h2>
-
-<div *ngIf="mensaje" class="mensaje">{{ mensaje }}</div>
-
-<form [formGroup]="productoForm" (ngSubmit)="guardarCambios()">
-  <label>Código de producto:
-    <input formControlName="codigoProducto" />
-  </label>
-
-  <label>Nombre:
-    <input formControlName="nombre" />
-  </label>
-
-  <label>Marca:
-    <select formControlName="idMarca">
-      <option *ngFor="let marca of marcas" [value]="marca.id">{{ marca.nombre }}</option>
-    </select>
-  </label>
-
-  <label>Modelo:
-    <select formControlName="idModelo">
-      <option *ngFor="let modelo of modelos" [value]="modelo.id">{{ modelo.nombre }}</option>
-    </select>
-  </label>
-
-  <label>Categoría:
-    <select formControlName="idCategoria">
-      <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
-    </select>
-  </label>
-
-  <label>Precio Online:
-    <input type="number" formControlName="precioOnline" />
-  </label>
-  <hr />
-<h3>Stock por Sucursal y Bodega</h3>
-
-<div *ngIf="producto?.sedes">
-  <div *ngFor="let sedeId of getSedeIds(producto.sedes)">
-    <h4>{{ producto.sedes[sedeId].nombreSucursal }}</h4>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Bodega</th>
-          <th>Stock</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let bodega of producto.sedes[sedeId].bodegas">
-          <td>{{ bodega.nombreBodega }}</td>
-          <td>
-           <input type="number"
-                [value]="getStockEditable(bodega.idBodega)"
-                (input)="actualizarStock(bodega.idBodega, $event)" 
-                placeholder="Ingrese stock"
-                title="Stock de la bodega" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div class="container">
+<div *ngIf="mensaje" 
+     class="alert alert-success alert-dismissible fade show"
+     role="alert">
+  {{ mensaje }}
+  <button type="button" class="btn-close" aria-label="Cerrar"
+    (click)="cerrarMensaje()"></button>
 </div>
 
 
-  <button type="submit" [disabled]="productoForm.invalid">Guardar Cambios</button>
-</form>
+
+
+  <form [formGroup]="productoForm" (ngSubmit)="guardarCambios()" enctype="multipart/form-data">
+    <div class="row">
+      <!-- Columna 1: Datos -->
+      <div class="col-md-4">
+        <div class="mb-3">
+          <label for="codigoProducto" class="form-label">Código del producto</label>
+          <input id="codigoProducto" formControlName="codigoProducto" class="form-control" placeholder="Ej: ABC123"
+            title="Código del producto" aria-label="Código del producto" />
+        </div>
+
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input id="nombre" formControlName="nombre" class="form-control" placeholder="Nombre del producto"
+            title="Nombre del producto" aria-label="Nombre del producto" />
+        </div>
+
+        <div class="mb-3">
+          <label for="idMarca" class="form-label">Marca</label>
+          <select id="idMarca" formControlName="idMarca" class="form-select" title="Seleccionar marca"
+            aria-label="Marca del producto">
+            <option *ngFor="let m of marcas" [value]="m.id">
+              {{ m.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="idModelo" class="form-label">Modelo</label>
+          <select id="idModelo" formControlName="idModelo" class="form-select" title="Seleccionar modelo"
+            aria-label="Modelo del producto">
+            <option *ngFor="let m of modelos" [value]="m.id">
+              {{ m.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="idCategoria" class="form-label">Categoría</label>
+          <select id="idCategoria" formControlName="idCategoria" class="form-select" title="Seleccionar categoría"
+            aria-label="Categoría del producto">
+            <option *ngFor="let c of categorias" [value]="c.id">
+              {{ c.nombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="precioOnline" class="form-label">Precio online</label>
+          <input type="number" id="precioOnline" formControlName="precioOnline" class="form-control"
+            placeholder="Ej: 9990" title="Precio online del producto" aria-label="Precio online" min="0" />
+        </div>
+        <div class="form-check mt-2 mb-3">
+          <input class="form-check-input" type="checkbox" id="activoCheck" formControlName="activo" />
+          <label class="form-check-label" for="activoCheck">
+            Producto activo
+          </label>
+        </div>
+      </div>
+
+      <!-- Columna 2: Stock con scroll y altura 100% en el modal -->
+      <div class="col-md-4 d-flex flex-column h-100">
+        <label class="form-label mb-2">Stock por bodega</label>
+        <div class="border rounded p-2 flex-grow-1 overflow-auto bg-white">
+          <div *ngIf="producto?.stock_por_bodega?.length > 0; else sinStock">
+            <div *ngFor="let stock of producto.stock_por_bodega">
+              <div class="fw-bold mt-2">{{ stock.nombre_sucursal }}</div>
+              <div class="mb-2">
+                <label [for]="'stock-' + stock.id_bodega" class="form-label">{{ stock.nombre_bodega }}</label>
+                <input type="number" class="form-control" [id]="'stock-' + stock.id_bodega"
+                  [value]="getStockEditable(stock.id_bodega)" (input)="actualizarStock(stock.id_bodega, $event)" min="0"
+                  placeholder="Stock" title="Stock de {{ stock.nombre_bodega }}" aria-label="Stock de " />
+              </div>
+            </div>
+          </div>
+          <ng-template #sinStock>
+            <div class="text-muted">Sin stock asignado a bodegas.</div>
+          </ng-template>
+        </div>
+      </div>
+
+
+
+
+      <!-- Columna 3: Imagen -->
+      <div class="col-md-4">
+        <div class="mb-3">
+          <ng-container *ngIf="producto?.imagen; else sinImagenAdmin">
+            <img [src]="imgUrl + producto.imagen" alt="Imagen actual" class="img-thumbnail mb-2"
+              style="width: 140px; height: 140px; object-fit: cover" />
+          </ng-container>
+          <ng-template #sinImagenAdmin>
+            <div class="text-muted text-center"
+              style="width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; border-radius: 8px;">
+              Sin imagen registrada
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="mb-3">
+          <label for="imagen" class="form-label">Reemplazar imagen</label>
+          <input id="imagen" type="file" class="form-control" (change)="onFileChange($event)" accept="image/*"
+            title="Seleccionar nueva imagen" aria-label="Seleccionar nueva imagen" />
+        </div>
+
+        <div *ngIf="nuevaImagen" class="mb-3">
+          <label class="form-label">Vista previa:</label><br />
+          <img title="Vista previa de la nueva imagen" alt="Vista previa de la nueva imagen" id="nuevaImagenPreview"
+            [src]="nuevaImagenPreview" class="img-thumbnail" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Guardar -->
+    <div class="mt-4 d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary" (click)="guardarCambios()">
+        Guardar cambios
+      </button>
+    </div>
+  </form>
+</div>

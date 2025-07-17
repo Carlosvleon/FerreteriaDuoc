@@ -1,65 +1,148 @@
-<div class="listaProductos-container">
-    <h1>Lista de Productos</h1>
-    <div class="busqueda">
-        <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="filterProducts()" placeholder="Buscar productos...">
+<div class="container py-4">
+  <h1 class="text-center text-primary mb-4">Lista de Productos</h1>
+  <!-- Filtros -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <label>Buscar</label>
+      <input type="text" class="form-control" [(ngModel)]="filtroTexto" (input)="aplicarFiltros()"
+        placeholder="Buscar por nombre, código, marca...">
     </div>
-    <ul>
-        <li *ngFor="let producto of pagedProductos">
-            <div class="producto-item">
-                <h2>{{ producto.nombre }}</h2>
-                <p>Código: {{ producto.codigo_producto }}</p>
-                <p>Marca: {{ producto.marca?.nombre || 'N/A' }}</p>
-                <p>Modelo: {{ producto.modelo?.nombre || 'N/A' }}</p>
-                <p>Categoría: {{ producto.categoria?.nombre || 'N/A' }}</p>
-                <p>Precio: {{ producto.precio_online | currency }}</p>
-                <button (click)="abrirModal(producto)">Ver Detalles</button>
-            </div>
-        </li>
-    </ul>
-    <div class="pagination">
-    <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
-    <span>Página {{ currentPage }} de {{ totalPages }}</span>
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Siguiente</button>
+    <div class="col-md-2">
+      <label>Marca</label>
+      <select title="Marca" class="form-select" [(ngModel)]="filtroMarca" (change)="aplicarFiltros()">
+        <option value="">Todas</option>
+        <option *ngFor="let marca of marcas" [value]="marca">{{ marca }}</option>
+      </select>
     </div>
-    <div class="filter">
-        <label for="search">Buscar:</label>
-        <input type="text" id="search" [(ngModel)]="searchTerm" (ngModelChange)="filterProducts()" placeholder="Buscar productos...">
+    <div class="col-md-2">
+      <label>Categoría</label>
+      <select title="Categoría" class="form-select" [(ngModel)]="filtroCategoria" (change)="aplicarFiltros()">
+        <option value="">Todas</option>
+        <option *ngFor="let categoria of categorias" [value]="categoria">{{ categoria }}</option>
+      </select>
     </div>
-    <p *ngIf="filteredProductos.length === 0">No se encontraron productos.</p>
+    <div class="col-md-2">
+      <label>Precio mínimo</label>
+      <input title="Precio mínimo" type="number" class="form-control" [(ngModel)]="filtroPrecioMin"
+        (input)="aplicarFiltros()">
+    </div>
+    <div class="col-md-2">
+      <label>Precio máximo</label>
+      <input title="Precio máximo" type="number" class="form-control" [(ngModel)]="filtroPrecioMax"
+        (input)="aplicarFiltros()">
+    </div>
+
+  </div>
+  <div class="mb-3">
+    <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">Limpiar Filtros</button>
+  </div>
+
+
+
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-2 g-4 mb-4">
+    <div *ngFor="let producto of pagedProductos" class="col">
+      <div class="card h-100 shadow-sm d-flex flex-column justify-content-between">
+        <!-- Recuadro de imagen/stock -->
+        <!-- Imagen del producto -->
+        <div class="d-flex align-items-center justify-content-center bg-light" style="height: 180px;">
+          <img *ngIf="producto.imagen; else sinImagen" [src]="imgUrl + producto.imagen"
+            class="img-fluid rounded" alt="Imagen del producto"
+            style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+          <ng-template #sinImagen>
+            <div class="text-muted">Sin imagen</div>
+          </ng-template>
+        </div>
+
+        <div class="card-body">
+          <h4 class="fw-bold card-title">{{ producto.nombre }}</h4>
+          <p class="mb-1"><strong>Código:</strong> {{ producto.id_producto }}</p>
+          <p class="mb-1"><strong>Marca:</strong> {{ producto.marca || 'N/A' }}</p>
+          <p class="mb-1"><strong>Modelo:</strong> {{ producto.modelo || 'N/A' }}</p>
+          <p class="mb-1"><strong>Categoría:</strong> {{ producto.categoria || 'N/A' }}</p>
+          <p class="mb-2"><strong>Precio:</strong> ${{ producto.precio_online | number:'1.0-0' }}</p>
+          <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#miModal"
+            (click)="abrirModal(producto)">Ver Detalles</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 gap-2">
+    <button class="btn btn-secondary w-100 w-sm-auto" (click)="previousPage()"
+      [disabled]="currentPage === 1">Anterior</button>
+    <span class="my-2 my-sm-0">Página {{ currentPage }} de {{ totalPages }}</span>
+    <button class="btn btn-secondary w-100 w-sm-auto" (click)="nextPage()"
+      [disabled]="currentPage === totalPages">Siguiente</button>
+  </div>
+
+  <p *ngIf="productosFiltrados.length === 0" class="alert alert-warning text-center">
+    No se encontraron productos.
+  </p>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="miModalLabel" aria-hidden="true" #modalRef>
+  <p *ngIf="mensajeExito" class="alert alert-success text-center">{{ mensajeExito }}</p>
+<p *ngIf="mensajeError" class="alert alert-danger text-center">{{ mensajeError }}</p>
 
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="miModalLabel">Detalles del Producto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3 align-items-center">
+          <div class="col-12 col-md-5 d-flex justify-content-center">
+            <div class="detalle-img-stock rounded d-flex align-items-center justify-content-center mb-3 mb-md-0"
+              style="width: 100%; height: 250px; background-color: #f8f9fa;">
+              <img *ngIf="productoSeleccionado?.imagen; else noImagenModal"
+                [src]="imgUrl + productoSeleccionado?.imagen" class="img-fluid rounded"
+                alt="Imagen del producto" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+              <ng-template #noImagenModal>
+                <div class="text-muted">Sin imagen</div>
+              </ng-template>
+            </div>
 
-<!-- Modal de Detalles -->
-<div class="modal-backdrop" *ngIf="modalAbierto">
-  <div class="modal">
-    <h2>Detalles del Producto</h2>
-    <p><strong>Nombre:</strong> {{ productoSeleccionado?.nombre }}</p>
-    <p><strong>Código:</strong> {{ productoSeleccionado?.codigo_producto }}</p>
-    <p><strong>Precio:</strong> {{ productoSeleccionado?.precio_online | currency }}</p>
+          </div>
+          <div class="col-12 col-md-7">
+            <p><strong>Nombre:</strong> {{ productoSeleccionado?.nombre }}</p>
+            <p><strong>Código:</strong> {{ productoSeleccionado?.codigo_producto }}</p>
+            <p><strong>Precio:</strong> {{ productoSeleccionado?.precio_online | currency }}</p>
 
-    <h3>Stock por Sucursal</h3>
-    <ul>
-      <li *ngFor="let stock of productoSeleccionado?.stock_por_sucursal">
-        {{ stock.nombre_sucursal }}: {{ stock.stock }} unidades
-      </li>
-    </ul>
+            <h5 class="mt-4">Stock por Sucursal</h5>
+            <ul class="list-group mb-3">
+              <li *ngFor="let s of productoSeleccionado?.sedes" class="list-group-item">
+                {{ s.nombre_sucursal }}: {{ sumarStockTotal(s) }} unidades
+              </li>
 
-<label for="sucursal">Seleccionar Sucursal:</label>
-<select id="sucursal" [(ngModel)]="sucursalSeleccionada" (change)="onSucursalChange()">
-  <option *ngFor="let s of productoSeleccionado.stock_por_sucursal" [value]="s.id_sucursal">
-    {{ s.nombre_sucursal || s.Sucursal }}
-  </option>
-</select>
+            </ul>
 
-    <label for="cantidad">Cantidad:</label>
-    <input type="number" [(ngModel)]="cantidadSeleccionada" [max]="maxStockSucursal" min="1" id="cantidad" />
-    <p *ngIf="cantidadSeleccionada > maxStockSucursal" class="error">Cantidad supera el stock disponible</p>
+            <div class="mb-3">
+              <label for="sucursal" class="form-label">Seleccionar Sucursal:</label>
+              <select id="sucursal" class="form-select" [(ngModel)]="sucursalSeleccionada" (change)="onSucursalChange()"
+                *ngIf="productoSeleccionado?.sedes">
+                <option *ngFor="let s of productoSeleccionado.sedes" [value]="s.id_sucursal">
+                  {{ s.nombre_sucursal }}
+                </option>
+              </select>
+            </div>
 
+            <div class="mb-3">
+              <label for="cantidad" class="form-label">Cantidad:</label>
+              <input type="number" class="form-control" [(ngModel)]="cantidadSeleccionada" [max]="maxStockSucursal"
+                min="1" id="cantidad" />
+              <p *ngIf="cantidadSeleccionada > maxStockSucursal" class="text-danger mt-2">
+                Cantidad supera el stock disponible
+              </p>
+            </div>
 
-    <div class="modal-actions">
-      <button (click)="confirmarAgregarAlCarrito()">Agregar al Carrito</button>
-      <button (click)="cerrarModal()">Cerrar</button>
+            <div class="modal-actions d-flex justify-content-between mt-4">
+              <button class="btn btn-success" (click)="confirmarAgregarAlCarrito()">Agregar al Carrito</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

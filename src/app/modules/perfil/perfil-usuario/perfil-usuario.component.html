@@ -1,55 +1,56 @@
-<div *ngIf="!estaAutenticado" class="bloqueo">
-  <div class="bloqueo-mensaje">
-    <h2>Acceso denegado</h2>
-    <p>Necesitas iniciar sesión para ver esta sección.</p>
-    <button class="btn-volver" (click)="volver()">Volver</button>
-  </div>
-</div>
-
-<div *ngIf="estaAutenticado">
-  <div class="tabs">
-    <button 
-      [class.active]="tab === 'datos'" 
-      (click)="tab = 'datos'">
-      Datos de la cuenta
-    </button>
-    <button 
-      [class.active]="tab === 'compras'" 
-      (click)="tab = 'compras'">
-      Historial de compras
-    </button>
+<div class="container py-4">
+  <div *ngIf="mensajeError" class="alert alert-danger text-center mb-3">
+    {{ mensajeError }}
   </div>
 
-  <div [ngSwitch]="tab">
-    <div *ngSwitchCase="'datos'">
-      <div *ngIf="miPerfil" class="perfil-container">
-        <img
-          class="perfil-imagen"
-          src="https://tse1.mm.bing.net/th?id=OIP.rcmXeqCUOiCg54dfU4v9tgHaHa&w=474&h=474&c=7"
-          alt="Foto de perfil">
-        <div class="perfil-nombre">{{ miPerfil.nombre }}</div>
-        <div class="perfil-email">
-          <span class="perfil-etiqueta">Email:</span> {{ miPerfil.email }}
-        </div>
-        <div class="perfil-rut">
-          <span class="perfil-etiqueta">RUT:</span> {{ miPerfil.rut }}
-        </div>
-        <div class="perfil-tipo">
-          <span class="perfil-etiqueta">Tipo de usuario:</span> {{ miPerfil.tipo_usuario_id }}
-        </div>
-        <div class="perfil-fecha">
-          <span class="perfil-etiqueta">Fecha de registro:</span> {{ miPerfil.fecha_registro | date:'longDate' }}
-        </div>
-        <div class="perfil-footer">
-          Datos personales protegidos por el sistema
-        </div>
-        <button class="btn-cerrar-sesion" (click)="cerrarSesion()">
-          Cerrar sesión
-        </button>
-      </div>
+  <div *ngIf="!estaAutenticado" class="d-flex justify-content-center align-items-center min-vh-50">
+    <div class="alert alert-warning text-center">
+      <h2 class="mb-2">Acceso denegado</h2>
+      <p>Necesitas iniciar sesión para ver esta sección.</p>
+      <button class="btn btn-primary mt-2" (click)="volver()">Volver</button>
     </div>
-    <div *ngSwitchCase="'compras'">
-      <app-historial-compras></app-historial-compras>
+  </div>
+
+  <div *ngIf="estaAutenticado">
+    <ul class="nav nav-tabs mb-4 justify-content-center" id="perfilTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [ngClass]="{active: tab === 'datos'}" (click)="tab = 'datos'" id="datos-tab" type="button" role="tab">Datos de la cuenta</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" [ngClass]="{active: tab === 'compras'}" (click)="tab = 'compras'" id="compras-tab" type="button" role="tab">Historial de compras</button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane fade" [ngClass]="{ 'show active': tab === 'datos' }" id="datos" role="tabpanel">
+        <div *ngIf="miPerfil" class="row justify-content-center">
+          <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm mb-4">
+              <div class="card-body text-center">
+                <img class="perfil-imagen rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #0d6efd;" src="https://tse1.mm.bing.net/th?id=OIP.rcmXeqCUOiCg54dfU4v9tgHaHa&w=474&h=474&c=7" alt="Foto de perfil">
+                <h4 class="perfil-nombre mb-2">{{ miPerfil.nombre }}</h4>
+                <p class="mb-1"><span class="perfil-etiqueta fw-bold">Email:</span> {{ miPerfil.email }}</p>
+                <p class="mb-1"><span class="perfil-etiqueta fw-bold">RUT:</span> {{ miPerfil.rut }}</p>
+                <p class="mb-1"><span class="perfil-etiqueta fw-bold">Tipo de usuario:</span> {{ miPerfil.tipo_usuario_id }}</p>
+                <p class="mb-1"><span class="perfil-etiqueta fw-bold">Fecha de registro:</span> {{ miPerfil.fecha_registro | date:'longDate' }}</p>
+                <div class="perfil-footer text-muted small mt-3 mb-3">
+                  Datos personales protegidos por el sistema
+                </div>
+                <button class="btn btn-danger btn-cerrar-sesion w-100" (click)="cerrarSesion()">
+                  Cerrar sesión
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" [ngClass]="{ 'show active': tab === 'compras' }" id="compras" role="tabpanel">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10">
+            <app-historial-compras></app-historial-compras>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

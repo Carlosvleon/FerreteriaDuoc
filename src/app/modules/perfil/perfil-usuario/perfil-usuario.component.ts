@@ -20,52 +20,58 @@ export class PerfilUsuarioComponent implements OnInit {
   miPerfil: any = null;
   estaAutenticado: boolean = false;
   tab: 'datos' | 'compras' = 'datos';
+  mensajeError: string | null = null;
   constructor(private perfilService: PerfilService,
               private http: HttpClient,
               private router: Router,
               private location: Location) {}
 
   ngOnInit(): void {
-  const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
 
-  if (!token) {
-    this.estaAutenticado = false;
-    console.warn('Token no encontrado. Usuario no autenticado.');
-    return;
-  }
-
-  this.estaAutenticado = true;
-
-  this.perfilService.miPerfil().subscribe({
-    next: (res) => {
-      this.miPerfil = res;
-      console.log('Perfil cargado:', res);
-    },
-    error: (err) => {
-      console.error('Error al cargar perfil:', err);
+    if (!token) {
       this.estaAutenticado = false;
+      this.mensajeError = 'No se encontró el token de autenticación.';
+      return;
     }
-  });
+
+    this.estaAutenticado = true;
+    this.mensajeError = null;
+
+    this.perfilService.miPerfil().subscribe({
+      next: (res) => {
+        this.miPerfil = res;
+        this.mensajeError = null;
+        console.log('Perfil cargado:', res);
+      },
+      error: (err) => {
+        this.mensajeError = 'Error al cargar el perfil. Intenta nuevamente más tarde.';
+        console.error('Error al cargar perfil:', err);
+        this.estaAutenticado = false;
+      }
+    });
 }
 cerrarSesion(): void {
-  this.http.post(environment.apiUrl + '/usuarios/cerrar_sesion', {}, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token') || ''}`
-    }
-  }).subscribe({
-    next: () => {
-      localStorage.removeItem('token');
-      this.miPerfil = null;
-      this.estaAutenticado = false;
-      this.router.navigate(['/login']); // Ajusta la ruta si tu login tiene otro path
-    },
-    error: (err) => {
-      console.error('Error al cerrar sesión:', err);
-      // También puedes limpiar el token aunque falle
-      localStorage.removeItem('token');
-      this.router.navigate(['/login']);
-    }
-  });
+    this.http.post(environment.apiUrl + '/usuarios/cerrar_sesion', {}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token') || ''}`
+      }
+    }).subscribe({
+      next: () => {
+        localStorage.removeItem('token');
+        this.miPerfil = null;
+        this.estaAutenticado = false;
+        this.mensajeError = null;
+        this.router.navigate(['/login']); // Ajusta la ruta si tu login tiene otro path
+      },
+      error: (err) => {
+        this.mensajeError = 'Error al cerrar sesión. Intenta nuevamente más tarde.';
+        console.error('Error al cerrar sesión:', err);
+        // También puedes limpiar el token aunque falle
+        localStorage.removeItem('token');
+        this.router.navigate(['/login']);
+      }
+    });
 }
 
 volver(): void {

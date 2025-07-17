@@ -10,7 +10,7 @@ export class CompraService {
 
   realizarCompra(): Observable<any> {
     return this.http.post(
-      `${this.apiUrl}/api/compra/realizar`,
+      `${this.apiUrl}/api/compras/realizar`,
       {},
       {
         headers: {
@@ -21,7 +21,7 @@ export class CompraService {
   }
 
   obtenerHistorial(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/api/compra/mis-compras`, {
+    return this.http.get<any[]>(`${this.apiUrl}/api/compras/mis-compras`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -30,7 +30,7 @@ export class CompraService {
 
   iniciarPagoWebpay(): Observable<{ token: string; url: string }> {
     return this.http.post<{ token: string; url: string }>(
-      `${this.apiUrl}/api/compra/webpay/iniciar`,
+      `${this.apiUrl}/api/compras/webpay/iniciar`,
       {},
       {
         headers: {
@@ -42,7 +42,7 @@ export class CompraService {
 
   confirmarPagoWebpay(tokenWs: string): Observable<any> {
     return this.http.post(
-      `${this.apiUrl}/api/compra/webpay/confirmar`,
+      `${this.apiUrl}/api/compras/webpay/confirmar`,
       { token_ws: tokenWs },
       {
         headers: {
