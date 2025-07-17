@@ -29,15 +29,21 @@ export class CompraService {
     });
   }
 
-  iniciarPagoWebpay(): Observable<{ token: string; url: string }> {
+ iniciarPagoWebpay(): Observable<any> {
     // Validar carrito antes de iniciar el pago
     if (!this.validarCarrito()) {
       return throwError(() => new Error('El carrito está vacío o el total es inválido'));
     }
 
-    return this.http.post<{ token: string; url: string }>(
-      `${this.apiUrl}/api/compras/webpay/iniciar`,
-      {},
+    const carritoData = localStorage.getItem('carrito');
+    const carrito = JSON.parse(carritoData!);
+
+    return this.http.post(
+      `${this.apiUrl}/webpay/realizar`,
+      {
+        productos: carrito.productos,
+        total: carrito.total_general
+      },
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
@@ -57,7 +63,7 @@ export class CompraService {
     }
 
     return this.http.post(
-      `${this.apiUrl}/api/compras/webpay/confirmar`,
+      `${this.apiUrl}/webpay/confirmar`,
       { token_ws: tokenWs },
       {
         headers: {
@@ -73,7 +79,21 @@ export class CompraService {
     );
   }
 
-  // Método auxiliar para validar el carrito antes de iniciar el pago
+  redirigirAPagoWebpay(): void {
+    this.iniciarPagoWebpay().subscribe({
+      next: (response: any) => {
+        if (response?.url) {
+          window.location.href = response.url;
+        } else {
+          console.error('URL de redirección no recibida');
+        }
+      },
+      error: (err: any) => {
+        console.error('Error al iniciar el pago:', err);
+      }
+    });
+  }
+
   private validarCarrito(): boolean {
     const carritoData = localStorage.getItem('carrito');
     if (!carritoData) return false;
@@ -86,25 +106,4 @@ export class CompraService {
     }
   }
 
-  redirigirAPagoWebpay(): void {
-    this.iniciarPagoWebpay().subscribe({
-      next: ({ token, url }: { token: string; url: string }) => {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = url;
-
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'token_ws';
-        input.value = token;
-        form.appendChild(input);
-
-        document.body.appendChild(form);
-        form.submit(); // Redirige a Webpay automáticamente
-      },
-      error: (err: any) => {
-        console.error('Error al iniciar el pago:', err);
-      }
-    });
-  }
 }
